@@ -1,0 +1,36 @@
+name: wanderly
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  auto_route: ^10.2.0
+  cached_network_image: ^3.4.1
+  dio: ^5.9.0
+  flutter_bloc: ^9.1.1
+  flutter_dotenv: ^6.0.0
+  flutter_svg: ^2.2.1
+  google_fonts: ^6.3.2
+  get_it: ^9.0.5
+  objectbox: ^5.0.1
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  auto_route_generator: ^10.2.5
+  build_runner: ^2.10.1
+  freezed: ^3.2.3
+  json_serializable: ^6.11.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/
