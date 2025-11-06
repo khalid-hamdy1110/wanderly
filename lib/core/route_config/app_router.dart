@@ -6,6 +6,13 @@ class AppRouter extends RootStackRouter {
   AppRouter({super.navigatorKey});
 
   @override
+  RouteType get defaultRouteType => RouteType.custom(
+    duration: const Duration(milliseconds: 300),
+    reverseDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
+  );
+
+  @override
   List<AutoRoute> get routes => [
     AutoRoute(page: OnboardingRoute.page),
     AutoRoute(

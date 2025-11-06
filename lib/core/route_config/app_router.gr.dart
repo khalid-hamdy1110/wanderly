@@ -10,6 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i10;
+import 'package:flutter/material.dart' as _i11;
+import 'package:wanderly/core/domain/entities/country.dart' as _i12;
 import 'package:wanderly/core/ui/navigation_bar_shell_page.dart' as _i5;
 import 'package:wanderly/features/01_onboarding/presentation/pages/onboarding_page.dart'
     as _i6;
@@ -17,7 +19,7 @@ import 'package:wanderly/features/02_explore/presentation/pages/destination_deta
     as _i1;
 import 'package:wanderly/features/02_explore/presentation/pages/explore_page.dart'
     as _i2;
-import 'package:wanderly/features/02_explore/presentation/pages/trips_planning_page.dart'
+import 'package:wanderly/features/04_my_trips/presentation/pages/trips_planning_page.dart'
     as _i9;
 import 'package:wanderly/features/03_favorites/presentation/pages/favorites_page.dart'
     as _i3;
@@ -30,18 +32,78 @@ import 'package:wanderly/features/05_profile/presentation/pages/profile_page.dar
 
 /// generated route for
 /// [_i1.DestinationDetailsPage]
-class DestinationDetailsRoute extends _i10.PageRouteInfo<void> {
-  const DestinationDetailsRoute({List<_i10.PageRouteInfo>? children})
-    : super(DestinationDetailsRoute.name, initialChildren: children);
+class DestinationDetailsRoute
+    extends _i10.PageRouteInfo<DestinationDetailsRouteArgs> {
+  DestinationDetailsRoute({
+    _i11.Key? key,
+    required _i12.Country country,
+    required bool isFavorite,
+    required _i11.VoidCallback onFavorite,
+    List<_i10.PageRouteInfo>? children,
+  }) : super(
+         DestinationDetailsRoute.name,
+         args: DestinationDetailsRouteArgs(
+           key: key,
+           country: country,
+           isFavorite: isFavorite,
+           onFavorite: onFavorite,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'DestinationDetailsRoute';
 
   static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i1.DestinationDetailsPage();
+      final args = data.argsAs<DestinationDetailsRouteArgs>();
+      return _i1.DestinationDetailsPage(
+        key: args.key,
+        country: args.country,
+        isFavorite: args.isFavorite,
+        onFavorite: args.onFavorite,
+      );
     },
   );
+}
+
+class DestinationDetailsRouteArgs {
+  const DestinationDetailsRouteArgs({
+    this.key,
+    required this.country,
+    required this.isFavorite,
+    required this.onFavorite,
+  });
+
+  final _i11.Key? key;
+
+  final _i12.Country country;
+
+  final bool isFavorite;
+
+  final _i11.VoidCallback onFavorite;
+
+  @override
+  String toString() {
+    return 'DestinationDetailsRouteArgs{key: $key, country: $country, isFavorite: $isFavorite, onFavorite: $onFavorite}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DestinationDetailsRouteArgs) return false;
+    return key == other.key &&
+        country == other.country &&
+        isFavorite == other.isFavorite &&
+        onFavorite == other.onFavorite;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      country.hashCode ^
+      isFavorite.hashCode ^
+      onFavorite.hashCode;
 }
 
 /// generated route for
