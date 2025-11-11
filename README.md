@@ -196,37 +196,4 @@ Retry logic (`core/network/retry.dart`) provides exponential backoff for transie
 | Security | API keys manual passing | Use secure storage & CI/CD secret management |
 | Analytics | No usage telemetry | Add optional analytics (opt-in) |
 
----
-## 11. Contribution Guidelines
-1. Fork & branch from `main`.
-2. Keep changes focused; update related documentation.
-3. Run `flutter analyze` and ensure no new warnings.
-4. Include tests for new logic when possible.
-5. Open a PR with a clear description & screenshots (UI changes).
-
-Code Style:
-- Prefer small Cubits per feature.
-- Avoid duplicated UI logic; extract widgets.
-- Keep domain pure (no Flutter imports).
-
----
-## 12. License
-Specify your license here (e.g., MIT). If proprietary/internal, state usage restrictions.
-
-```
-MIT License (example)
-Copyright (c) 2025 Wanderly Authors
-Permission is hereby granted...
-```
-
----
-## Appendix: Troubleshooting
-| Issue | Possible Fix |
-|-------|--------------|
-| Build_runner hangs | Delete `build/` & rerun generation |
-| Exchange rates show N/A | Confirm API key or endpoint availability |
-| AppErrorWidget loops retry | Inspect Cubit for non-transient errors; disable auto retry |
-| Incorrect currency conversion | Verify exchange rate direction & rounding |
-
----
 Happy wandering! 🌍
