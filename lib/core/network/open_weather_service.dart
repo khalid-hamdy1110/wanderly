@@ -33,12 +33,10 @@ class OpenWeatherService {
             _cacheDuration;
 
         if (!isExpired) {
-          print('OpenWeather -> Got from cache!');
           return jsonDecode(cachedData) as Map<String, dynamic>;
         }
       }
 
-      print('OpenWeather -> Got from API!');
       final response = await _dio.get(
         _baseUrl,
         queryParameters: {

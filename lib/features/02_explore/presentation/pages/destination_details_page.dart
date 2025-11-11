@@ -5,16 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/domain/entities/country.dart';
+import 'package:wanderly/core/presentation/cubits/favorites/favorites_cubit.dart';
+import 'package:wanderly/core/presentation/cubits/favorites/favorites_state.dart';
+import 'package:wanderly/core/route_config/app_router.gr.dart';
+import 'package:wanderly/core/ui/weather_card.dart';
+import 'package:wanderly/features/02_explore/presentation/widgets/bottom_sheet_button.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 import 'package:wanderly/core/utilities/useful_functions.dart';
 import 'package:wanderly/features/02_explore/domain/entities/country_image.dart';
 import 'package:wanderly/features/02_explore/domain/entities/country_weather.dart';
 import 'package:wanderly/features/02_explore/domain/extensions/country_extension.dart';
+import 'package:wanderly/core/ui/snackbars.dart';
 import 'package:wanderly/features/02_explore/presentation/cubit/destination_details/destination_details_state.dart';
 import 'package:wanderly/features/02_explore/presentation/cubit/destination_details/images_cubit.dart';
 import 'package:wanderly/features/02_explore/presentation/cubit/destination_details/weather_cubit.dart';
 import 'package:wanderly/features/02_explore/presentation/widgets/destination_card.dart';
-import 'package:wanderly/features/02_explore/presentation/widgets/detailInfo.dart';
+import 'package:wanderly/features/02_explore/presentation/widgets/detail_info.dart';
 import 'package:wanderly/injection/injection.dart';
 
 @RoutePage()
@@ -22,30 +28,35 @@ class DestinationDetailsPage extends StatefulWidget {
   const DestinationDetailsPage({
     super.key,
     required this.country,
-    required this.isFavorite,
-    required this.onFavorite,
+    required this.source,
   });
 
+  final String source;
   final Country country;
-  final bool isFavorite;
-  final VoidCallback onFavorite;
 
   @override
   State<DestinationDetailsPage> createState() => _DestinationDetailsPageState();
 }
 
 class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
-  late bool isCurFavorite;
   final carouselController = CarouselController();
 
   @override
-  void initState() {
-    isCurFavorite = widget.isFavorite;
-    super.initState();
+  void dispose() {
+    carouselController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isFav = context.select<FavoritesCubit, bool>(
+      (cubit) =>
+          cubit.state is FavoritesLoaded &&
+          (cubit.state as FavoritesLoaded).favoriteDestinations.any(
+            (country) => country.code == widget.country.code,
+          ),
+    );
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -66,43 +77,10 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
           surfaceTintColor: Colors.transparent,
           title: _backButtonBuilder(context),
         ),
-        bottomSheet: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.1),
-                spreadRadius: -5,
-                blurRadius: 25,
-                offset: Offset(0, -10),
-              ),
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.1),
-                spreadRadius: -6,
-                blurRadius: 10,
-                offset: Offset(0, -4),
-              ),
-            ],
-          ),
-          child: InkWell(
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF385C),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: const Center(
-                child: CustomText(
-                  'Plan Your Trip',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+        bottomSheet: BottomSheetButton(
+          onTap: () =>
+              context.router.push(TripsPlanningRoute(country: widget.country)),
+          label: 'Plan Your Trip',
         ),
         body:
             BlocBuilder<
@@ -114,29 +92,38 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
                   child: Column(
                     children: [
                       _backgroundImageBuilder(state),
-                      Transform.translate(
-                        offset: const Offset(0, -60),
-                        child: Column(
-                          children: [
-                            _firstCardDetailsBuilder(),
-                            const SizedBox(height: 24),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1000),
+                        child: Transform.translate(
+                          transformHitTests: true,
+                          offset: const Offset(0, -60),
+                          child: Column(
+                            children: [
+                              _firstCardDetailsBuilder(context, isFav),
+                              const SizedBox(height: 24),
 
-                            BlocBuilder<
-                              WeatherCubit,
-                              DestinationDetailsState<CountryWeather>
-                            >(
-                              builder: (context, state) {
-                                return _buildWeatherCard(state);
-                              },
-                            ),
-                            const SizedBox(height: 24),
-                            _buildAboutCard(),
-                            const SizedBox(height: 24),
-                            _essentialInformationCard(),
-                            const SizedBox(height: 24),
-                            _photoGalleryBuilder(state),
-                            const SizedBox(height: 65),
-                          ],
+                              BlocBuilder<
+                                WeatherCubit,
+                                DestinationDetailsState<CountryWeather>
+                              >(
+                                builder: (context, state) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: WeatherCard(state: state),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              _buildAboutCard(),
+                              const SizedBox(height: 24),
+                              _essentialInformationCard(),
+                              const SizedBox(height: 24),
+                              _photoGalleryBuilder(state),
+                              const SizedBox(height: 65),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -237,7 +224,7 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
     return DestinationCard(
       bgColor: Colors.white,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const CustomText('About', fontSize: 20, fontWeight: FontWeight.bold),
           const SizedBox(height: 12),
@@ -248,80 +235,6 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Container _buildWeatherCard(DestinationDetailsState<CountryWeather> state) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.fromRGBO(43, 127, 255, 1),
-            Color.fromRGBO(0, 184, 219, 1),
-          ],
-          stops: [0, 1],
-        ),
-      ),
-      child: switch (state) {
-        DestinationDetailsInitial<CountryWeather>() => const Center(
-          child: Text(
-            'Loading weather data!',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-        DestinationDetailsLoading() => const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        ),
-        DestinationDetailsLoaded<CountryWeather>(
-          countryDetails: final weather,
-        ) =>
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                'Current Weather, ${weather.weatherDescription}',
-                fontSize: 14,
-                color: Colors.white,
-              ),
-              CustomText(
-                '${temperatureKToC(weather.temperature)}°C',
-                fontSize: 48,
-                color: Colors.white,
-              ),
-              Row(
-                children: [
-                  const Icon(Amicons.remix_drop, color: Colors.white, size: 16),
-                  CustomText(
-                    ' ${weather.humidity}%',
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 16),
-                  const Icon(
-                    Amicons.remix_windy,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  CustomText(
-                    ' ${weather.windSpeed} km/h',
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        DestinationDetailsError(message: final message) => Center(
-          child: Text(message, style: const TextStyle(color: Colors.white)),
-        ),
-      },
     );
   }
 
@@ -365,7 +278,7 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
     );
   }
 
-  DestinationCard _firstCardDetailsBuilder() {
+  DestinationCard _firstCardDetailsBuilder(BuildContext context, bool isFav) {
     return DestinationCard(
       bgColor: Colors.white,
       child: Column(
@@ -386,7 +299,8 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
                         maxWidth: double.infinity,
                       ),
                       child: Hero(
-                        tag: 'country_flag_${widget.country.flagUrl}',
+                        tag:
+                            '${widget.source}_country_flag_${widget.country.flagUrl}',
                         child: AspectRatio(
                           aspectRatio: 3 / 2,
                           child: ClipRRect(
@@ -419,34 +333,39 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, right: 14),
-                child: InkWell(
-                  onTap: () {
-                    widget.onFavorite();
-                    setState(() {
-                      isCurFavorite = !isCurFavorite;
-                    });
-                  },
-                  child: Animate(
-                    key: ValueKey(isCurFavorite),
-                    effects: [
-                      ScaleEffect(
-                        duration: 200.ms,
-                        curve: Curves.easeInOut,
-                        begin: const Offset(0.9, 0.9),
-                      ),
-                      FadeEffect(
-                        duration: 200.ms,
-                        curve: Curves.easeInOut,
-                        begin: 0.8,
-                      ),
-                    ],
+              InkWell(
+                onTap: () async {
+                  final wasFav = isFav;
+                  await context.read<FavoritesCubit>().toggleFavoriteStatus(
+                    widget.country,
+                  );
+                  if (context.mounted) {
+                    if (wasFav) {
+                      showSuccessSnackBar(context, 'Removed from favorites');
+                    } else {
+                      showSuccessSnackBar(context, 'Added to favorites');
+                    }
+                  }
+                },
+                child: Animate(
+                  key: ValueKey(isFav),
+                  effects: [
+                    ScaleEffect(
+                      duration: 200.ms,
+                      curve: Curves.easeInOut,
+                      begin: const Offset(0.9, 0.9),
+                    ),
+                    FadeEffect(
+                      duration: 200.ms,
+                      curve: Curves.easeInOut,
+                      begin: 0.8,
+                    ),
+                  ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16, right: 14),
                     child: Icon(
-                      isCurFavorite
-                          ? Amicons.remix_heart_fill
-                          : Amicons.remix_heart,
-                      color: isCurFavorite
+                      isFav ? Amicons.remix_heart_fill : Amicons.remix_heart,
+                      color: isFav
                           ? const Color(0xFFFF385C)
                           : const Color(0xFF717171),
                       size: 30,

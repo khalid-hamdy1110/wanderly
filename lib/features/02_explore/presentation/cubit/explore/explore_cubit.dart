@@ -1,20 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/domain/entities/country.dart';
 import 'package:wanderly/core/domain/usecases/get_favorite_countries.dart';
-import 'package:wanderly/core/domain/usecases/toggle_favorite_country.dart';
 import 'package:wanderly/features/02_explore/domain/usecases/get_all_countries.dart';
 import 'package:wanderly/features/02_explore/presentation/cubit/explore/explore_state.dart';
+import 'package:wanderly/core/constants/travel_interests.dart';
 
 class ExploreCubit extends Cubit<ExploreState> {
   final GetAllCountries _getAllCountries;
   final GetFavoriteCountries _getFavoriteCountries;
-  final ToggleFavoriteCountry _toggleFavoriteCountry;
 
-  ExploreCubit(
-    this._getAllCountries,
-    this._getFavoriteCountries,
-    this._toggleFavoriteCountry,
-  ) : super(ExploreInitial());
+  ExploreCubit(this._getAllCountries, this._getFavoriteCountries)
+    : super(ExploreInitial());
 
   Future<void> fetchAllCountries() async {
     emit(ExploreLoading());
@@ -32,7 +28,8 @@ class ExploreCubit extends Cubit<ExploreState> {
             ExploreLoaded(
               countries: shuffled,
               filteredCountries: shuffled,
-              favorites: favorites,
+              searchQuery: '',
+              selectedInterest: null,
             ),
           );
         },
@@ -40,46 +37,53 @@ class ExploreCubit extends Cubit<ExploreState> {
     });
   }
 
-  void filterCountries(String query) {
+  void setSearchQuery(String query) {
     final currentState = state;
     if (currentState is ExploreLoaded) {
-      final filtered = currentState.countries
-          .where(
-            (country) =>
-                country.name.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
-
-      emit(
-        ExploreLoaded(
-          countries: currentState.countries,
-          filteredCountries: filtered,
-          favorites: currentState.favorites,
-        ),
+      _applyFilters(
+        countries: currentState.countries,
+        searchQuery: query,
+        selectedInterest: currentState.selectedInterest,
       );
     }
   }
 
-  Future<void> toggleFavorite(Country country) async {
+  void setSelectedInterest(String? interest) {
     final currentState = state;
     if (currentState is ExploreLoaded) {
-      final result = await _toggleFavoriteCountry(country);
-
-      result.fold((failure) => emit(ExploreError(failure.message)), (_) async {
-        final favoriteResult = await _getFavoriteCountries();
-        favoriteResult.fold(
-          (favFailure) => emit(ExploreError(favFailure.message)),
-          (favorites) {
-            emit(
-              ExploreLoaded(
-                countries: currentState.countries,
-                filteredCountries: currentState.filteredCountries,
-                favorites: favorites,
-              ),
-            );
-          },
-        );
-      });
+      _applyFilters(
+        countries: currentState.countries,
+        searchQuery: currentState.searchQuery,
+        selectedInterest: interest,
+      );
     }
+  }
+
+  void _applyFilters({
+    required List<Country> countries,
+    required String searchQuery,
+    required String? selectedInterest,
+  }) {
+    final lowerQuery = searchQuery.toLowerCase();
+    final interestCountries = selectedInterest == null
+        ? null
+        : interestCountryMap[selectedInterest] ?? <String>[];
+
+    final filtered = countries.where((country) {
+      final matchesSearch = country.name.toLowerCase().contains(lowerQuery);
+      final matchesInterest = interestCountries == null
+          ? true
+          : interestCountries.contains(country.name);
+      return matchesSearch && matchesInterest;
+    }).toList();
+
+    emit(
+      ExploreLoaded(
+        countries: countries,
+        filteredCountries: filtered,
+        searchQuery: searchQuery,
+        selectedInterest: selectedInterest,
+      ),
+    );
   }
 }

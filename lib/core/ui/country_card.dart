@@ -15,6 +15,8 @@ class CountryCard extends StatelessWidget {
     required this.briefInfo,
     required this.isFavorite,
     required this.onFavorite,
+    this.includeFavoriteIcon = true,
+    required this.source,
   });
 
   final Color backgroundColor;
@@ -25,6 +27,8 @@ class CountryCard extends StatelessWidget {
   final String briefInfo;
   final bool isFavorite;
   final VoidCallback onFavorite;
+  final bool includeFavoriteIcon;
+  final String source;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +44,7 @@ class CountryCard extends StatelessWidget {
         children: [
           Expanded(
             child: Hero(
-              tag: 'country_flag_$flagUrl',
+              tag: '${source}_country_flag_$flagUrl',
               child: AspectRatio(
                 aspectRatio: 3 / 2,
                 child: ClipRRect(
@@ -78,10 +82,13 @@ class CountryCard extends StatelessWidget {
                       size: 14,
                       color: Color(0xFF717171),
                     ),
-                    CustomText(
-                      ' $region',
-                      fontSize: 14,
-                      color: const Color(0xFF717171),
+                    Expanded(
+                      child: CustomText(
+                        ' $region',
+                        fontSize: 14,
+                        color: const Color(0xFF717171),
+                        textAlign: TextAlign.start,
+                      ),
                     ),
                   ],
                 ),
@@ -95,46 +102,48 @@ class CountryCard extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                InkWell(
-                  onTap: onFavorite,
-                  child: Animate(
-                    key: ValueKey(isFavorite),
-                    effects: [
-                      ScaleEffect(
-                        duration: 200.ms,
-                        curve: Curves.easeInOut,
-                        begin: const Offset(0.9, 0.9),
-                      ),
-                      FadeEffect(
-                        duration: 200.ms,
-                        curve: Curves.easeInOut,
-                        begin: 0.8,
-                      ),
-                    ],
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFEBEBEB)),
-                      ),
-                      child: Icon(
-                        isFavorite
-                            ? Amicons.remix_heart_fill
-                            : Amicons.remix_heart,
-                        color: isFavorite ? Colors.red : Colors.grey,
-                        size: 20,
+
+          if (includeFavoriteIcon)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: onFavorite,
+                    child: Animate(
+                      key: ValueKey(isFavorite),
+                      effects: [
+                        ScaleEffect(
+                          duration: 200.ms,
+                          curve: Curves.easeInOut,
+                          begin: const Offset(0.9, 0.9),
+                        ),
+                        FadeEffect(
+                          duration: 200.ms,
+                          curve: Curves.easeInOut,
+                          begin: 0.8,
+                        ),
+                      ],
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFFEBEBEB)),
+                        ),
+                        child: Icon(
+                          isFavorite
+                              ? Amicons.remix_heart_fill
+                              : Amicons.remix_heart,
+                          color: isFavorite ? Colors.red : Colors.grey,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

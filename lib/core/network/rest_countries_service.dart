@@ -27,12 +27,10 @@ class RestCountriesService {
             _cacheDuration;
 
         if (!isExpired) {
-          print('RestCountries -> Got from cache!');
           return jsonDecode(cachedData) as List<dynamic>;
         }
       }
 
-      print('RestCountries -> Got from API!');
       final response = await _dio.get(
         'https://restcountries.com/v3.1/all?fields=name,flags,region,capital,population,languages,currencies,timezones,cca2,latlng',
       );

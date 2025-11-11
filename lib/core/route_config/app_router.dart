@@ -3,7 +3,9 @@ import 'package:wanderly/core/route_config/app_router.gr.dart';
 
 @AutoRouterConfig()
 class AppRouter extends RootStackRouter {
-  AppRouter({super.navigatorKey});
+  AppRouter({super.navigatorKey, required this.showOnboarding});
+
+  final bool showOnboarding;
 
   @override
   RouteType get defaultRouteType => RouteType.custom(
@@ -14,10 +16,10 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: OnboardingRoute.page),
+    AutoRoute(page: OnboardingRoute.page, initial: showOnboarding),
     AutoRoute(
       page: NavigationBarShellRoute.page,
-      initial: true,
+      initial: !showOnboarding,
       children: [
         AutoRoute(page: ExploreRoute.page, initial: true),
         AutoRoute(page: FavoritesRoute.page),

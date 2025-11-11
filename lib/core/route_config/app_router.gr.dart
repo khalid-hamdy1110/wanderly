@@ -19,14 +19,18 @@ import 'package:wanderly/features/02_explore/presentation/pages/destination_deta
     as _i1;
 import 'package:wanderly/features/02_explore/presentation/pages/explore_page.dart'
     as _i2;
-import 'package:wanderly/features/04_my_trips/presentation/pages/trips_planning_page.dart'
-    as _i9;
 import 'package:wanderly/features/03_favorites/presentation/pages/favorites_page.dart'
     as _i3;
+import 'package:wanderly/features/04_my_trips/domain/entities/trip.dart'
+    as _i13;
 import 'package:wanderly/features/04_my_trips/presentation/pages/my_trips_page.dart'
     as _i4;
 import 'package:wanderly/features/04_my_trips/presentation/pages/trip_details_page.dart'
     as _i8;
+import 'package:wanderly/features/04_my_trips/presentation/pages/trips_planning_page.dart'
+    as _i9;
+import 'package:wanderly/features/04_my_trips/presentation/widgets/trip_card.dart'
+    as _i14;
 import 'package:wanderly/features/05_profile/presentation/pages/profile_page.dart'
     as _i7;
 
@@ -37,16 +41,14 @@ class DestinationDetailsRoute
   DestinationDetailsRoute({
     _i11.Key? key,
     required _i12.Country country,
-    required bool isFavorite,
-    required _i11.VoidCallback onFavorite,
+    required String source,
     List<_i10.PageRouteInfo>? children,
   }) : super(
          DestinationDetailsRoute.name,
          args: DestinationDetailsRouteArgs(
            key: key,
            country: country,
-           isFavorite: isFavorite,
-           onFavorite: onFavorite,
+           source: source,
          ),
          initialChildren: children,
        );
@@ -60,8 +62,7 @@ class DestinationDetailsRoute
       return _i1.DestinationDetailsPage(
         key: args.key,
         country: args.country,
-        isFavorite: args.isFavorite,
-        onFavorite: args.onFavorite,
+        source: args.source,
       );
     },
   );
@@ -71,21 +72,18 @@ class DestinationDetailsRouteArgs {
   const DestinationDetailsRouteArgs({
     this.key,
     required this.country,
-    required this.isFavorite,
-    required this.onFavorite,
+    required this.source,
   });
 
   final _i11.Key? key;
 
   final _i12.Country country;
 
-  final bool isFavorite;
-
-  final _i11.VoidCallback onFavorite;
+  final String source;
 
   @override
   String toString() {
-    return 'DestinationDetailsRouteArgs{key: $key, country: $country, isFavorite: $isFavorite, onFavorite: $onFavorite}';
+    return 'DestinationDetailsRouteArgs{key: $key, country: $country, source: $source}';
   }
 
   @override
@@ -94,16 +92,11 @@ class DestinationDetailsRouteArgs {
     if (other is! DestinationDetailsRouteArgs) return false;
     return key == other.key &&
         country == other.country &&
-        isFavorite == other.isFavorite &&
-        onFavorite == other.onFavorite;
+        source == other.source;
   }
 
   @override
-  int get hashCode =>
-      key.hashCode ^
-      country.hashCode ^
-      isFavorite.hashCode ^
-      onFavorite.hashCode;
+  int get hashCode => key.hashCode ^ country.hashCode ^ source.hashCode;
 }
 
 /// generated route for
@@ -204,32 +197,105 @@ class ProfileRoute extends _i10.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.TripDetailsPage]
-class TripDetailsRoute extends _i10.PageRouteInfo<void> {
-  const TripDetailsRoute({List<_i10.PageRouteInfo>? children})
-    : super(TripDetailsRoute.name, initialChildren: children);
+class TripDetailsRoute extends _i10.PageRouteInfo<TripDetailsRouteArgs> {
+  TripDetailsRoute({
+    _i11.Key? key,
+    required _i13.Trip trip,
+    required _i14.TripType tripType,
+    List<_i10.PageRouteInfo>? children,
+  }) : super(
+         TripDetailsRoute.name,
+         args: TripDetailsRouteArgs(key: key, trip: trip, tripType: tripType),
+         initialChildren: children,
+       );
 
   static const String name = 'TripDetailsRoute';
 
   static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i8.TripDetailsPage();
+      final args = data.argsAs<TripDetailsRouteArgs>();
+      return _i8.TripDetailsPage(
+        key: args.key,
+        trip: args.trip,
+        tripType: args.tripType,
+      );
     },
   );
 }
 
+class TripDetailsRouteArgs {
+  const TripDetailsRouteArgs({
+    this.key,
+    required this.trip,
+    required this.tripType,
+  });
+
+  final _i11.Key? key;
+
+  final _i13.Trip trip;
+
+  final _i14.TripType tripType;
+
+  @override
+  String toString() {
+    return 'TripDetailsRouteArgs{key: $key, trip: $trip, tripType: $tripType}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! TripDetailsRouteArgs) return false;
+    return key == other.key && trip == other.trip && tripType == other.tripType;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ trip.hashCode ^ tripType.hashCode;
+}
+
 /// generated route for
 /// [_i9.TripsPlanningPage]
-class TripsPlanningRoute extends _i10.PageRouteInfo<void> {
-  const TripsPlanningRoute({List<_i10.PageRouteInfo>? children})
-    : super(TripsPlanningRoute.name, initialChildren: children);
+class TripsPlanningRoute extends _i10.PageRouteInfo<TripsPlanningRouteArgs> {
+  TripsPlanningRoute({
+    _i11.Key? key,
+    required _i12.Country country,
+    List<_i10.PageRouteInfo>? children,
+  }) : super(
+         TripsPlanningRoute.name,
+         args: TripsPlanningRouteArgs(key: key, country: country),
+         initialChildren: children,
+       );
 
   static const String name = 'TripsPlanningRoute';
 
   static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i9.TripsPlanningPage();
+      final args = data.argsAs<TripsPlanningRouteArgs>();
+      return _i9.TripsPlanningPage(key: args.key, country: args.country);
     },
   );
+}
+
+class TripsPlanningRouteArgs {
+  const TripsPlanningRouteArgs({this.key, required this.country});
+
+  final _i11.Key? key;
+
+  final _i12.Country country;
+
+  @override
+  String toString() {
+    return 'TripsPlanningRouteArgs{key: $key, country: $country}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! TripsPlanningRouteArgs) return false;
+    return key == other.key && country == other.country;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ country.hashCode;
 }

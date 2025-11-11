@@ -15,6 +15,8 @@ import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'core/data/models/country_model.dart';
+import 'features/04_my_trips/data/models/expense_model.dart';
+import 'features/04_my_trips/data/models/trip_model.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
@@ -102,6 +104,150 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(4, 1999250577107410682),
+    name: 'ExpenseModel',
+    lastPropertyId: const obx_int.IdUid(7, 1379945352122992092),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 5853137287024678207),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 272166288304969404),
+        name: 'tripId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(3, 8210147071411316847),
+        relationField: 'trip',
+        relationTarget: 'TripModel',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 5162583589809830081),
+        name: 'title',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 6943813406480373740),
+        name: 'amount',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 8238171013652289747),
+        name: 'dateEpoch',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 1379945352122992092),
+        name: 'category',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(6, 5190915476921005972),
+    name: 'TripModel',
+    lastPropertyId: const obx_int.IdUid(13, 6655743669117446455),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 4286748375188788856),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 4904710312433537818),
+        name: 'tripId',
+        type: 9,
+        flags: 2080,
+        indexId: const obx_int.IdUid(5, 2199954323814789897),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 7163551420236743527),
+        name: 'tripName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 3256065437889145377),
+        name: 'countryName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 2786584686338327766),
+        name: 'startDateEpoch',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 1176058286239862305),
+        name: 'endDateEpoch',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 6727976639435388480),
+        name: 'budget',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 2682002250539185792),
+        name: 'budgetCurrency',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(9, 7885962344638023986),
+        name: 'destinationCurrency',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(10, 7532770515699712669),
+        name: 'notes',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(11, 2854461139175029437),
+        name: 'isManuallyCompleted',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(12, 3725636941310118825),
+        name: 'countryLatitude',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(13, 6655743669117446455),
+        name: 'countryLongitude',
+        type: 8,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[
+      obx_int.ModelBacklink(
+        name: 'expenses',
+        srcEntity: 'ExpenseModel',
+        srcField: 'trip',
+      ),
+    ],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -142,13 +288,40 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(1, 7484034086495310549),
-    lastIndexId: const obx_int.IdUid(1, 6663108256094463810),
+    lastEntityId: const obx_int.IdUid(6, 5190915476921005972),
+    lastIndexId: const obx_int.IdUid(5, 2199954323814789897),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
-    retiredEntityUids: const [],
+    retiredEntityUids: const [
+      6837518579365469787,
+      181254047548685809,
+      7386603736730346507,
+    ],
     retiredIndexUids: const [],
-    retiredPropertyUids: const [],
+    retiredPropertyUids: const [
+      86744922129568040,
+      8236129982424426265,
+      701459978499999209,
+      5240880987429829891,
+      2684242388825267224,
+      3929472298950804132,
+      4593378488804720669,
+      938726781220067995,
+      3348695286549375681,
+      5114273568416129154,
+      4765499280457675409,
+      8294122084294761007,
+      5370590981938825256,
+      1485042579787603315,
+      2163175351578224423,
+      1344808911126983129,
+      3897563750494154337,
+      1802471273103149748,
+      7262090860350778795,
+      567399805295107954,
+      1205159050547189637,
+      5692503284572683672,
+    ],
     retiredRelationUids: const [],
     modelVersion: 5,
     modelVersionParserMinimum: 5,
@@ -267,6 +440,203 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    ExpenseModel: obx_int.EntityDefinition<ExpenseModel>(
+      model: _entities[1],
+      toOneRelations: (ExpenseModel object) => [object.trip],
+      toManyRelations: (ExpenseModel object) => {},
+      getId: (ExpenseModel object) => object.id,
+      setId: (ExpenseModel object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ExpenseModel object, fb.Builder fbb) {
+        final titleOffset = fbb.writeString(object.title);
+        final categoryOffset = fbb.writeString(object.category);
+        fbb.startTable(8);
+        fbb.addInt64(0, object.id);
+        fbb.addInt64(1, object.trip.targetId);
+        fbb.addOffset(2, titleOffset);
+        fbb.addFloat64(3, object.amount);
+        fbb.addInt64(5, object.dateEpoch);
+        fbb.addOffset(6, categoryOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final titleParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final amountParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          10,
+          0,
+        );
+        final categoryParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 16, '');
+        final dateEpochParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        final object = ExpenseModel(
+          id: idParam,
+          title: titleParam,
+          amount: amountParam,
+          category: categoryParam,
+          dateEpoch: dateEpochParam,
+        );
+        object.trip.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          6,
+          0,
+        );
+        object.trip.attach(store);
+        return object;
+      },
+    ),
+    TripModel: obx_int.EntityDefinition<TripModel>(
+      model: _entities[2],
+      toOneRelations: (TripModel object) => [],
+      toManyRelations: (TripModel object) => {
+        obx_int.RelInfo<ExpenseModel>.toOneBacklink(
+          2,
+          object.id,
+          (ExpenseModel srcObject) => srcObject.trip,
+        ): object.expenses,
+      },
+      getId: (TripModel object) => object.id,
+      setId: (TripModel object, int id) {
+        object.id = id;
+      },
+      objectToFB: (TripModel object, fb.Builder fbb) {
+        final tripIdOffset = fbb.writeString(object.tripId);
+        final tripNameOffset = fbb.writeString(object.tripName);
+        final countryNameOffset = fbb.writeString(object.countryName);
+        final budgetCurrencyOffset = fbb.writeString(object.budgetCurrency);
+        final destinationCurrencyOffset = fbb.writeString(
+          object.destinationCurrency,
+        );
+        final notesOffset = object.notes == null
+            ? null
+            : fbb.writeString(object.notes!);
+        fbb.startTable(14);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, tripIdOffset);
+        fbb.addOffset(2, tripNameOffset);
+        fbb.addOffset(3, countryNameOffset);
+        fbb.addInt64(4, object.startDateEpoch);
+        fbb.addInt64(5, object.endDateEpoch);
+        fbb.addFloat64(6, object.budget);
+        fbb.addOffset(7, budgetCurrencyOffset);
+        fbb.addOffset(8, destinationCurrencyOffset);
+        fbb.addOffset(9, notesOffset);
+        fbb.addBool(10, object.isManuallyCompleted);
+        fbb.addFloat64(11, object.countryLatitude);
+        fbb.addFloat64(12, object.countryLongitude);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final tripIdParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final tripNameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final countryNameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final countryLatitudeParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          26,
+          0,
+        );
+        final countryLongitudeParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          28,
+          0,
+        );
+        final startDateEpochParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          12,
+          0,
+        );
+        final endDateEpochParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        final budgetParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          16,
+          0,
+        );
+        final budgetCurrencyParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 18, '');
+        final destinationCurrencyParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 20, '');
+        final notesParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 22);
+        final isManuallyCompletedParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          24,
+          false,
+        );
+        final object = TripModel(
+          id: idParam,
+          tripId: tripIdParam,
+          tripName: tripNameParam,
+          countryName: countryNameParam,
+          countryLatitude: countryLatitudeParam,
+          countryLongitude: countryLongitudeParam,
+          startDateEpoch: startDateEpochParam,
+          endDateEpoch: endDateEpochParam,
+          budget: budgetParam,
+          budgetCurrency: budgetCurrencyParam,
+          destinationCurrency: destinationCurrencyParam,
+          notes: notesParam,
+          isManuallyCompleted: isManuallyCompletedParam,
+        );
+        obx_int.InternalToManyAccess.setRelInfo<TripModel>(
+          object.expenses,
+          store,
+          obx_int.RelInfo<ExpenseModel>.toOneBacklink(
+            2,
+            object.id,
+            (ExpenseModel srcObject) => srcObject.trip,
+          ),
+        );
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -332,5 +702,111 @@ class CountryModel_ {
   /// See [CountryModel.longitude].
   static final longitude = obx.QueryDoubleProperty<CountryModel>(
     _entities[0].properties[11],
+  );
+}
+
+/// [ExpenseModel] entity fields to define ObjectBox queries.
+class ExpenseModel_ {
+  /// See [ExpenseModel.id].
+  static final id = obx.QueryIntegerProperty<ExpenseModel>(
+    _entities[1].properties[0],
+  );
+
+  /// See [ExpenseModel.trip].
+  static final trip = obx.QueryRelationToOne<ExpenseModel, TripModel>(
+    _entities[1].properties[1],
+  );
+
+  /// See [ExpenseModel.title].
+  static final title = obx.QueryStringProperty<ExpenseModel>(
+    _entities[1].properties[2],
+  );
+
+  /// See [ExpenseModel.amount].
+  static final amount = obx.QueryDoubleProperty<ExpenseModel>(
+    _entities[1].properties[3],
+  );
+
+  /// See [ExpenseModel.dateEpoch].
+  static final dateEpoch = obx.QueryIntegerProperty<ExpenseModel>(
+    _entities[1].properties[4],
+  );
+
+  /// See [ExpenseModel.category].
+  static final category = obx.QueryStringProperty<ExpenseModel>(
+    _entities[1].properties[5],
+  );
+}
+
+/// [TripModel] entity fields to define ObjectBox queries.
+class TripModel_ {
+  /// See [TripModel.id].
+  static final id = obx.QueryIntegerProperty<TripModel>(
+    _entities[2].properties[0],
+  );
+
+  /// See [TripModel.tripId].
+  static final tripId = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[1],
+  );
+
+  /// See [TripModel.tripName].
+  static final tripName = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[2],
+  );
+
+  /// See [TripModel.countryName].
+  static final countryName = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[3],
+  );
+
+  /// See [TripModel.startDateEpoch].
+  static final startDateEpoch = obx.QueryIntegerProperty<TripModel>(
+    _entities[2].properties[4],
+  );
+
+  /// See [TripModel.endDateEpoch].
+  static final endDateEpoch = obx.QueryIntegerProperty<TripModel>(
+    _entities[2].properties[5],
+  );
+
+  /// See [TripModel.budget].
+  static final budget = obx.QueryDoubleProperty<TripModel>(
+    _entities[2].properties[6],
+  );
+
+  /// See [TripModel.budgetCurrency].
+  static final budgetCurrency = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[7],
+  );
+
+  /// See [TripModel.destinationCurrency].
+  static final destinationCurrency = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[8],
+  );
+
+  /// See [TripModel.notes].
+  static final notes = obx.QueryStringProperty<TripModel>(
+    _entities[2].properties[9],
+  );
+
+  /// See [TripModel.isManuallyCompleted].
+  static final isManuallyCompleted = obx.QueryBooleanProperty<TripModel>(
+    _entities[2].properties[10],
+  );
+
+  /// See [TripModel.countryLatitude].
+  static final countryLatitude = obx.QueryDoubleProperty<TripModel>(
+    _entities[2].properties[11],
+  );
+
+  /// See [TripModel.countryLongitude].
+  static final countryLongitude = obx.QueryDoubleProperty<TripModel>(
+    _entities[2].properties[12],
+  );
+
+  /// see [TripModel.expenses]
+  static final expenses = obx.QueryBacklinkToMany<ExpenseModel, TripModel>(
+    ExpenseModel_.trip,
   );
 }

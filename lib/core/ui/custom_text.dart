@@ -27,6 +27,7 @@ class CustomText extends StatelessWidget {
   final TextOverflow? overflow;
   final int? maxLines;
 
+  @override
   Widget build(BuildContext context) {
     return Text(data,
     style: GoogleFonts.arimo(

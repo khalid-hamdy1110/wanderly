@@ -16,6 +16,7 @@ class DetailInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           padding: const EdgeInsets.all(10),
@@ -25,18 +26,20 @@ class DetailInfo extends StatelessWidget {
           ),
           child: Icon(icon, color: const Color(0xFFFF385C), size: 20),
         ),
-        const SizedBox(width: 4),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomText(' $title', fontSize: 12, color: const Color(0xFF717171)),
-            CustomText(
-              ' $info',
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
-            ),
-          ],
+        const SizedBox(width: 8),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(title, fontSize: 12, color: const Color(0xFF717171)),
+              CustomText(
+                info,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1A1A1A),
+              ),
+            ],
+          ),
         ),
       ],
     );

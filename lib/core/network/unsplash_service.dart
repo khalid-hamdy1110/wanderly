@@ -30,12 +30,10 @@ class UnsplashService {
             _cacheDuration;
 
         if (!isExpired) {
-          print('Unsplash -> Got from cache!');
           return jsonDecode(cachedData) as Map<String, dynamic>;
         }
       }
 
-      print('Unsplash -> Got from API!');
       final response = await _dio.get(_baseUrl, queryParameters: {
         'query': '$countryName travel landscapes',
         'page': 1,

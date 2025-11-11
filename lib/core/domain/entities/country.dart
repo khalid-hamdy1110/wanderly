@@ -29,6 +29,8 @@ class Country extends Equatable {
 
   @override
   List<Object?> get props => [
+    code,
+    flagUrl,
     name,
     capital,
     region,

@@ -15,12 +15,23 @@ class ExploreLoading extends ExploreState {}
 class ExploreLoaded extends ExploreState {
   final List<Country> countries;
   final List<Country> filteredCountries;
-  final List<Country> favorites;
+  final String searchQuery;
+  final String? selectedInterest;
 
-  const ExploreLoaded({required this.countries, required this.filteredCountries, required this.favorites});
+  const ExploreLoaded({
+    required this.countries,
+    required this.filteredCountries,
+    this.searchQuery = '',
+    this.selectedInterest,
+  });
 
   @override
-  List<Object?> get props => [countries, filteredCountries, favorites];
+  List<Object?> get props => [
+    countries,
+    filteredCountries,
+    searchQuery,
+    selectedInterest,
+  ];
 }
 
 class ExploreError extends ExploreState {
