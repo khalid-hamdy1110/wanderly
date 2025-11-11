@@ -152,16 +152,11 @@ If remote APIs require keys (e.g., Weather, Exchange Rate):
 Create a `.env` or use Dart-define flags:
 ```
 # .env (example)
-WEATHER_API_KEY=YOUR_KEY
-EXCHANGE_API_KEY=YOUR_KEY
+OPENWEATHER_API_KEY=YOUR_API_KEY
+UNSPLASH_ACCESS_KEY=YOUR_API_KEY
+EXCHANGE_RATES_API_KEY=YOUR_API_KEY
 ```
-Then pass at run time:
-```bash
-flutter run --dart-define=WEATHER_API_KEY=YOUR_KEY --dart-define=EXCHANGE_API_KEY=YOUR_KEY
-```
-Add safe accessors (e.g., `const String.fromEnvironment('WEATHER_API_KEY')`).
 
-If you do not yet have keys integrated, this section is a placeholder for future secure configuration.
 
 ---
 ## 8. Development Workflow
@@ -173,13 +168,6 @@ If you do not yet have keys integrated, this section is a placeholder for future
 | Hot reload | `r` in terminal or IDE action |
 | Analyze | `flutter analyze` |
 | Format | `dart format .` |
-
-Branch naming suggestion:
-- `feat/short-description`
-- `fix/issue-description`
-- `chore/update-deps`
-
-Commit convention (optional): Conventional Commits (`feat:`, `fix:`, `refactor:`, etc.).
 
 ---
 ## 9. Error Handling Strategy
