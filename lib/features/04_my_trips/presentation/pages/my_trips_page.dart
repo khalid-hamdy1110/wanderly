@@ -139,7 +139,12 @@ class _MyTripsPageState extends State<MyTripsPage> {
             currency: trip.budgetCurrency,
             tripType: tripType,
             daysUntilTrip: tripType == TripType.upcoming
-                ? (trip.startDate.day - today.day).ceil()
+                ? (trip.startDate.difference(today).inMilliseconds /
+                          1000 /
+                          60 /
+                          60 /
+                          24)
+                      .ceil()
                 : null,
             onDelete: () {
               context.read<TripsPlanningCubit>().deleteTrip(trip.tripId);
