@@ -1,6 +1,9 @@
 abstract interface class SettingsRepository {
   Future<void> setOnboardingCompleted(bool completed);
   bool isOnboardingCompleted();
+
+  Future<void> setIsDarkMode(bool isDarkMode);
+  bool isDarkMode();
   
   Future<void> setUsername(String username);
   String getUsername();

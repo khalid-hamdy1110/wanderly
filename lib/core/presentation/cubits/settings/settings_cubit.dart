@@ -2,7 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/domain/usecases/get_preferred_currency.dart';
 import 'package:wanderly/core/domain/usecases/get_travel_interests.dart';
 import 'package:wanderly/core/domain/usecases/get_username.dart';
+import 'package:wanderly/core/domain/usecases/is_dark_mode.dart';
 import 'package:wanderly/core/domain/usecases/is_onboarding_completed.dart';
+import 'package:wanderly/core/domain/usecases/set_is_dark_mode.dart';
 import 'package:wanderly/core/domain/usecases/set_onboarding_completed.dart';
 import 'package:wanderly/core/domain/usecases/set_preferred_currency.dart';
 import 'package:wanderly/core/domain/usecases/set_travel_interests.dart';
@@ -18,6 +20,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetTravelInterests _setTravelInterests;
   final IsOnboardingCompleted _isOnboardingCompleted;
   final SetOnboardingCompleted _setOnboardingCompleted;
+  final IsDarkMode _isDarkMode;
+  final SetIsDarkMode _setIsDarkMode;
 
   SettingsCubit({
     required GetUsername getUsername,
@@ -28,6 +32,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetTravelInterests setTravelInterests,
     required IsOnboardingCompleted isOnboardingCompleted,
     required SetOnboardingCompleted setOnboardingCompleted,
+    required IsDarkMode isDarkMode,
+    required SetIsDarkMode setIsDarkMode,
   })  : _getUsername = getUsername,
         _setUsername = setUsername,
         _getPreferredCurrency = getPreferredCurrency,
@@ -36,12 +42,15 @@ class SettingsCubit extends Cubit<SettingsState> {
         _setTravelInterests = setTravelInterests,
         _isOnboardingCompleted = isOnboardingCompleted,
         _setOnboardingCompleted = setOnboardingCompleted,
+        _isDarkMode = isDarkMode,
+        _setIsDarkMode = setIsDarkMode,
         super(
           SettingsState(
             username: getUsername(),
             preferredCurrency: getPreferredCurrency(),
             travelInterests: getTravelInterests(),
             onboardingCompleted: isOnboardingCompleted(),
+            isDarkMode: isDarkMode(),
           ),
         );
 
@@ -52,6 +61,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         preferredCurrency: _getPreferredCurrency(),
         travelInterests: _getTravelInterests(),
         onboardingCompleted: _isOnboardingCompleted(),
+        isDarkMode: _isDarkMode(),
       ),
     );
   }
@@ -74,5 +84,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> setOnboardingCompleted(bool completed) async {
     await _setOnboardingCompleted(completed);
     emit(state.copyWith(onboardingCompleted: completed));
+  }
+
+  Future<void> setIsDarkMode(bool isDarkMode) async {
+    await _setIsDarkMode(isDarkMode);
+    emit(state.copyWith(isDarkMode: isDarkMode));
   }
 }

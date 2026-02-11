@@ -2,6 +2,7 @@ import 'package:amicons/amicons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 
 enum TripType { ongoing, upcoming, past }
@@ -39,7 +40,7 @@ class TripCard extends StatefulWidget {
 class _TripCardState extends State<TripCard> {
   final DateFormat dateFormatter = DateFormat('MMM dd, yyyy');
 
-  bool _fading = false; 
+  bool _fading = false;
   bool _shrunk = false;
 
   void _animateAndDelete() {
@@ -58,182 +59,205 @@ class _TripCardState extends State<TripCard> {
       },
       child: _shrunk
           ? const SizedBox.shrink()
-          : _buildCard()
-              .animate(target: _fading ? 1 : 0)
-              .fadeOut(duration: 180.ms, curve: Curves.easeOut)
-              .slideY(begin: 0, end: -0.02, duration: 180.ms, curve: Curves.easeOut)
-              .then()
-              .callback(callback: (_) {
-                setState(() => _shrunk = true);
-              }),
+          : _buildCard(context)
+                .animate(target: _fading ? 1 : 0)
+                .fadeOut(duration: 180.ms, curve: Curves.easeOut)
+                .slideY(
+                  begin: 0,
+                  end: -0.02,
+                  duration: 180.ms,
+                  curve: Curves.easeOut,
+                )
+                .then()
+                .callback(
+                  callback: (_) {
+                    setState(() => _shrunk = true);
+                  },
+                ),
     );
   }
 
-  IntrinsicHeight _buildCard() {
+  IntrinsicHeight _buildCard(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return IntrinsicHeight(
-    child: InkWell(
-      onTap: widget.onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: customColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEBEBEB)),
+          border: Border.all(color: customColors.border),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(widget.tripTitle, fontSize: 16),
-                    CustomText(
-                      widget.countryName,
-                      fontSize: 14,
-                      color: const Color(0xFF717171),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomText(widget.tripTitle, fontSize: 16),
+                          CustomText(
+                            widget.countryName,
+                            fontSize: 14,
+                            color: customColors.onMuted,
+                          ),
+                        ],
+                      ),
+                      Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          onTap: _animateAndDelete,
+                          child: Icon(
+                            Amicons.remix_delete_bin,
+                            color: customColors.destructive,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _tripTypePillBuilder(context),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Amicons.remix_calendar,
+                        color: customColors.onMuted,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      CustomText(
+                        '${dateFormatter.format(widget.startDate)} - ${dateFormatter.format(widget.endDate)}',
+                        fontSize: 14,
+                        color: customColors.onMuted,
+                      ),
+                    ],
+                  ),
+                  if (widget.tripType == TripType.upcoming &&
+                      widget.daysUntilTrip != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Amicons.remix_time,
+                          color: customColors.primary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        CustomText(
+                          '${widget.daysUntilTrip} days until trip',
+                          fontSize: 14,
+                          color: customColors.primary,
+                        ),
+                        Expanded(
+                          child: CustomText(
+                            '${(_dayProgress() * 100).toInt()}%',
+                            fontSize: 12,
+                            color: customColors.onMuted,
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TweenAnimationBuilder(
+                      tween: Tween<double>(begin: 0, end: _dayProgress()),
+                      duration: const Duration(milliseconds: 800),
+                      builder: (context, value, child) {
+                        return LinearProgressIndicator(
+                          value: value,
+                          backgroundColor: customColors.accent,
+                          color: customColors.primary,
+                          minHeight: 8,
+                          borderRadius: BorderRadius.circular(999),
+                        );
+                      },
                     ),
                   ],
-                ),
-                InkWell(
-                  onTap: _animateAndDelete,
-                  child: const Icon(
-                    Amicons.remix_delete_bin,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _tripTypePillBuilder(),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(
-                  Amicons.remix_calendar,
-                  color: Color(0xFF717171),
-                  size: 16,
-                ),
-                const SizedBox(width: 6),
-                CustomText(
-                  '${dateFormatter.format(widget.startDate)} - ${dateFormatter.format(widget.endDate)}',
-                  fontSize: 14,
-                  color: const Color(0xFF717171),
-                ),
-              ],
-            ),
-            if (widget.tripType == TripType.upcoming &&
-                widget.daysUntilTrip != null) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(
-                    Amicons.remix_time,
-                    color: Color(0xFFFF385C),
-                    size: 16,
-                  ),
-                  const SizedBox(width: 6),
-                  CustomText(
-                    '${widget.daysUntilTrip} days until trip',
-                    fontSize: 14,
-                    color: const Color(0xFFFF385C),
-                  ),
-                  Expanded(
-                    child: CustomText(
-                      '${(_dayProgress() * 100).toInt()}%',
-                      fontSize: 12,
-                      color: const Color(0xFF717171),
-                      textAlign: TextAlign.end,
-                    ),
+                  const SizedBox(height: 12),
+                  Divider(color: customColors.border),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        Amicons.lucide_dollar_sign,
+                        color: customColors.onMuted,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      CustomText(
+                        'Budget',
+                        fontSize: 14,
+                        color: customColors.onMuted,
+                      ),
+                      const Spacer(),
+                      CustomText(
+                        '${widget.budget} ${widget.currency}',
+                        fontSize: 14,
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              TweenAnimationBuilder(
-                tween: Tween<double>(begin: 0, end: _dayProgress()),
-                duration: const Duration(milliseconds: 800),
-                builder: (context, value, child) {
-                  return LinearProgressIndicator(
-                    value: value,
-                    backgroundColor: const Color(0xFFF3F4F6),
-                    color: const Color(0xFFFF385C),
-                    minHeight: 8,
-                    borderRadius: BorderRadius.circular(999),
-                  );
-                },
-              ),
-            ],
-            const SizedBox(height: 12),
-            const Divider(color: Color(0xFFEBEBEB)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(
-                  Amicons.remix_money_dollar_box,
-                  color: Color(0xFF717171),
-                  size: 16,
-                ),
-                const SizedBox(width: 6),
-                const CustomText(
-                  'Budget',
-                  fontSize: 14,
-                  color: Color(0xFF717171),
-                ),
-                const Spacer(),
-                CustomText(
-                  '${widget.budget} ${widget.currency}',
-                  fontSize: 14,
-                ),
-              ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 
-  Widget _tripTypePillBuilder() {
+  Widget _tripTypePillBuilder(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     switch (widget.tripType) {
       case TripType.ongoing:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: const Color(0xFFDCFCE7),
+            color: customColors.ongoing.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const CustomText(
+          child: CustomText(
             'Ongoing',
             fontSize: 12,
-            color: Color(0xFF008236),
+            color: customColors.ongoing,
+            fontWeight: FontWeight.bold,
           ),
         );
       case TripType.upcoming:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: const Color(0xFFDBEAFE),
+            color: customColors.upcoming.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const CustomText(
+          child: CustomText(
             'Upcoming',
             fontSize: 12,
-            color: Color(0xFF1447E6),
+            color: customColors.upcoming,
+            fontWeight: FontWeight.bold,
           ),
         );
       case TripType.past:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3E8FF),
+            color: customColors.completed.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const CustomText(
+          child: CustomText(
             'Completed',
             fontSize: 12,
-            color: Color(0xFF8200DB),
+            color: customColors.completed,
+            fontWeight: FontWeight.bold,
           ),
         );
     }

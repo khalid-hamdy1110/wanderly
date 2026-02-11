@@ -14,6 +14,9 @@ class CountryImagesRepositoryImpl implements CountryImagesRepository{
   Future<Either<Failure, List<CountryImage>>> getCountryImages(Country country) async {
     try {
       final countryImages = await countryImagesRemoteDataSource.getCountryImages(country.name);
+      if (countryImages.isEmpty) {
+        return Left(ServerFailure('No images found for country: ${country.name}'));
+      }
       return Right(countryImages);
     } on Failure catch(failure) {
       return Left(failure);

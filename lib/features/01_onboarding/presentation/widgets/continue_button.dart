@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 
 class ContinueButton extends StatelessWidget {
@@ -17,28 +18,48 @@ class ContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: isDisabled ? null : onTap,
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: isDisabled
-              ? const Color.fromARGB(255, 255, 138, 159)
-              : const Color(0xFFFF385C),
+    final customColors = context.theme.customColors;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      height: 48,
+      decoration: BoxDecoration(
+        color: isDisabled ? customColors.disabledPrimary : customColors.primary,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: customColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isDisabled ? null : onTap,
           borderRadius: BorderRadius.circular(999),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomText(
-              label,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 8),
-            Icon(icon, color: Colors.white, size: 18),
-          ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 150),
+                child: CustomText(
+                  label,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isDisabled
+                      ? customColors.disabledOnPrimary
+                      : customColors.onPrimary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 150),
+                child: Icon(
+                  icon,
+                  color: isDisabled
+                      ? customColors.disabledOnPrimary
+                      : customColors.onPrimary,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

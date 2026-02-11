@@ -1,5 +1,6 @@
 import 'package:amicons/amicons.dart';
 import 'package:flutter/material.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 
 class BottomSheetButton extends StatelessWidget {
@@ -14,11 +15,16 @@ class BottomSheetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 255, 255),
-        borderRadius: BorderRadius.circular(24),
+        color: customColors.accent,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -34,30 +40,34 @@ class BottomSheetButton extends StatelessWidget {
           ),
         ],
       ),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF385C),
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: customColors.primary,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onTap,
             borderRadius: BorderRadius.circular(999),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Amicons.remix_calendar_check,
-                color: Colors.white,
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              CustomText(
-                label,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Amicons.remix_calendar_check,
+                  color: customColors.onPrimary,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                CustomText(
+                  label,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: customColors.onPrimary,
+                ),
+              ],
+            ),
           ),
         ),
       ),

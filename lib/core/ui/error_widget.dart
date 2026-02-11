@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
+import 'package:wanderly/core/ui/custom_text.dart';
 
 class AppErrorWidget extends StatelessWidget {
   const AppErrorWidget({
@@ -20,16 +22,9 @@ class AppErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final customColors = context.theme.customColors;
 
     final iconSize = dense ? 28.0 : 48.0;
-    final titleStyle = theme.textTheme.titleMedium?.copyWith(
-      fontWeight: FontWeight.w600,
-    );
-    final messageStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.8 : 0.7),
-    );
 
     final content = Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: dense ? 8 : 16),
@@ -39,26 +34,27 @@ class AppErrorWidget extends StatelessWidget {
             ? CrossAxisAlignment.start
             : CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: iconSize, color: theme.colorScheme.error),
+          Icon(icon, size: iconSize, color: customColors.destructive),
           SizedBox(height: dense ? 8 : 12),
-          Text(
+          CustomText(
             title,
-            style: titleStyle,
+            color: customColors.onBackground,
+            fontWeight: FontWeight.bold,
             textAlign: dense ? TextAlign.start : TextAlign.center,
           ),
           const SizedBox(height: 6),
-          Text(
+          CustomText(
             message,
-            style: messageStyle,
+            color: customColors.onMuted,
             textAlign: dense ? TextAlign.start : TextAlign.center,
           ),
           SizedBox(height: dense ? 10 : 16),
           FilledButton(
             onPressed: onRetry,
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(const Color(0xFFFF385C)),
+              backgroundColor: WidgetStateProperty.all(customColors.primary),
             ),
-            child: Text(retryLabel),
+            child: CustomText(retryLabel, color: customColors.onPrimary),
           ),
         ],
       ),

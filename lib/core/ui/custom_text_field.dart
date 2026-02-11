@@ -1,6 +1,7 @@
 import 'package:amicons/amicons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -14,6 +15,9 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.icon,
     this.onChanged,
+    this.showErrorMsg = true,
+    this.trailingText,
+    this.textAlign = TextAlign.start,
   });
 
   final TextEditingController? controller;
@@ -24,6 +28,9 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?) validator;
   final IconData? icon;
   final ValueChanged<String>? onChanged;
+  final bool showErrorMsg;
+  final String? trailingText;
+  final TextAlign textAlign;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -41,6 +48,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return FormField<String>(
       validator: widget.validator,
       initialValue: widget.controller?.text,
@@ -67,22 +76,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
+                color: customColors.secondary,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   width: field.hasError ? 2 : 0,
                   color: field.hasError
-                      ? const Color(0xFFE11D48)
-                      : const Color(0xFFF7F7F7),
+                      ? customColors.destructive
+                      : customColors.border,
                 ),
               ),
               child: Row(
                 children: [
                   if (widget.icon != null)
-                    Icon(widget.icon, size: 18, color: const Color(0xFF717171)),
+                    Icon(
+                      widget.icon,
+                      size: 18,
+                      color: customColors.textFieldPlaceholder,
+                    ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
+                      textAlign: widget.textAlign,
                       focusNode: _focusNode,
                       controller: widget.controller,
                       onTapOutside: (_) => FocusScope.of(context).unfocus(),
@@ -97,27 +111,35 @@ class _CustomTextFieldState extends State<CustomTextField> {
                         isDense: true,
                         contentPadding: const EdgeInsets.all(0),
                       ),
+                      style: TextStyle(color: customColors.onSecondary),
                     ),
                   ),
+                  if (widget.trailingText != null)
+                    CustomText(
+                      widget.trailingText!,
+                      fontSize: 12,
+                      color: customColors.textFieldPlaceholder,
+                      fontWeight: FontWeight.bold,
+                    ),
                 ],
               ),
             ),
-            if (field.hasError)
+            if (field.hasError && widget.showErrorMsg)
               Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Amicons.remix_error_warning,
                           size: 14,
-                          color: Color(0xFFE11D48),
+                          color: customColors.destructive,
                         ),
                         const SizedBox(width: 4),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: CustomText(
                             field.errorText ?? '',
-                            color: const Color(0xFFE11D48),
+                            color: customColors.destructive,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),

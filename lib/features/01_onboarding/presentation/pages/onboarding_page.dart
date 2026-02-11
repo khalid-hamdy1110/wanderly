@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/constants/travel_interests.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 import 'package:wanderly/core/ui/custom_text_field.dart';
 import 'package:wanderly/core/ui/snackbars.dart';
@@ -56,13 +57,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _setPrefsCubit),
         BlocProvider.value(value: _onboardingCubit),
       ],
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: customColors.background,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -78,9 +81,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       builder: (context, value, child) {
                         return LinearProgressIndicator(
                           value: value,
-                          backgroundColor: const Color(0xFFF7F7F7),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFFF385C),
+                          backgroundColor: customColors.secondary,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            customColors.primary,
                           ),
                           borderRadius: BorderRadius.circular(8),
                         );
@@ -131,6 +134,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Column _fourthPageBuilder(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -142,17 +147,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        const CustomText(
+        CustomText(
           'Ready to explore amazing destinations',
           fontSize: 14,
-          color: Color(0xFF717171),
+          color: customColors.onMuted,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
 
         Container(
           padding: const EdgeInsets.all(22),
-          color: const Color.fromRGBO(247, 247, 247, 0.5),
+          color: customColors.secondary.withValues(alpha: 0.5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -175,11 +180,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     children: [
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: CustomText(
                               'Name',
                               fontSize: 14,
-                              color: Color(0xFF717171),
+                              color: customColors.onMuted,
                             ),
                           ),
                           Expanded(
@@ -194,11 +199,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: CustomText(
                               'Preferred Currency',
                               fontSize: 14,
-                              color: Color(0xFF717171),
+                              color: customColors.onMuted,
                             ),
                           ),
                           Expanded(
@@ -214,11 +219,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: CustomText(
                               'Travel Interests',
                               fontSize: 14,
-                              color: Color(0xFF717171),
+                              color: customColors.onMuted,
                             ),
                           ),
                           Expanded(
@@ -289,6 +294,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Column _thirdPageBuilder(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -299,10 +306,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           textAlign: TextAlign.left,
         ),
         const SizedBox(height: 8),
-        const CustomText(
+        CustomText(
           'Select your travel preferences',
           fontSize: 16,
-          color: Color(0xFF717171),
+          color: customColors.onMuted,
         ),
         const SizedBox(height: 32),
 
@@ -317,29 +324,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
           itemCount: availableTravelInterests.length,
           itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () {
-                context.read<OnboardingCubit>().toggleInterest(
-                  availableTravelInterests[index]['title']!,
+            return Builder(
+              builder: (context) {
+                return InterestTile(
+                  isSelected:
+                      context
+                          .select<OnboardingCubit, List<String>?>(
+                            (c) => c.state.selectedInterests,
+                          )
+                          ?.contains(
+                            availableTravelInterests[index]['title']!,
+                          ) ??
+                      false,
+                  emoji: availableTravelInterests[index]['emoji']!,
+                  title: availableTravelInterests[index]['title']!,
+                  onTap: () {
+                    context.read<OnboardingCubit>().toggleInterest(
+                      availableTravelInterests[index]['title']!,
+                    );
+                  },
                 );
               },
-              child: Builder(
-                builder: (context) {
-                  return InterestTile(
-                    isSelected:
-                        context
-                            .select<OnboardingCubit, List<String>?>(
-                              (c) => c.state.selectedInterests,
-                            )
-                            ?.contains(
-                              availableTravelInterests[index]['title']!,
-                            ) ??
-                        false,
-                    emoji: availableTravelInterests[index]['emoji']!,
-                    title: availableTravelInterests[index]['title']!,
-                  );
-                },
-              ),
             );
           },
         ),
@@ -373,6 +378,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Column _firstPageBuilder(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -385,10 +392,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        const CustomText(
+        CustomText(
           'Plan amazing trips and explore the world with ease.',
           fontSize: 16,
-          color: Color(0xFF717171),
+          color: customColors.onMuted,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -397,10 +404,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           validator: (_) {
             return null;
           },
-          hint: const CustomText(
+          hint: CustomText(
             'Enter your name',
             fontSize: 16,
-            color: Color(0xFF717171),
+            color: customColors.onMuted,
           ),
         ),
         const SizedBox(height: 16),
@@ -443,6 +450,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     List<String> currencies,
   ) async {
     final controller = TextEditingController();
+    final customColors = context.theme.customColors;
+
     return showDialog<String>(
       context: context,
       builder: (context) {
@@ -450,16 +459,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: Colors.white,
+              backgroundColor: customColors.card,
               title: CustomTextField(
                 validator: (_) {
                   return null;
                 },
                 controller: controller,
-                hint: const CustomText(
+                hint: CustomText(
                   'Search currencies...',
                   fontSize: 16,
-                  color: Color(0xFF717171),
+                  color: customColors.onMuted,
                 ),
                 icon: Icons.search,
                 onChanged: (value) {
@@ -494,6 +503,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _secondPageBuilder(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       builder: (context, state) {
         final selectedCurrency =
@@ -508,28 +519,28 @@ class _OnboardingPageState extends State<OnboardingPage> {
               textAlign: TextAlign.left,
             ),
             const SizedBox(height: 8),
-            const CustomText(
+            CustomText(
               'This will be used for budget planning',
               fontSize: 16,
-              color: Color(0xFF717171),
+              color: customColors.onMuted,
             ),
             const SizedBox(height: 32),
             Container(
               padding: const EdgeInsets.all(26),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: const Color.fromRGBO(255, 56, 93, 0.2),
+                  color: customColors.primary.withValues(alpha: 0.2),
                 ),
-                color: const Color.fromRGBO(255, 56, 93, 0.1),
+                color: customColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const CustomText(
+                  CustomText(
                     'Selected Currency',
                     fontSize: 14,
-                    color: Color(0xFF717171),
+                    color: customColors.onMuted,
                   ),
                   const SizedBox(height: 8),
                   CustomText(
@@ -549,6 +560,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
             const SizedBox(height: 8),
             SearchCurrencies(
+              label: selectedCurrency == 'No currency selected'
+                  ? 'Search from 100+ currencies...'
+                  : selectedCurrency,
               onPressed: () async {
                 final prefsState = context.read<SetPrefsCubit>().state;
                 final String? selected;
@@ -558,7 +572,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   context.read<OnboardingCubit>().selectCurrencyDisplay(
                     selected,
                   );
-                  showErrorSnackBar(context, 'Failed to load currencies, defaulting to USD, can be changed later in the settings.');
+                  showErrorSnackBar(
+                    context,
+                    'Failed to load currencies, defaulting to USD, can be changed later in the settings.',
+                  );
                   return;
                 }
                 final list = prefsState.currencies;
@@ -567,7 +584,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   context.read<OnboardingCubit>().selectCurrencyDisplay(
                     selected,
                   );
-                  showErrorSnackBar(context, 'Failed to load currencies, defaulting to USD, can be changed later in the settings.');
+                  showErrorSnackBar(
+                    context,
+                    'Failed to load currencies, defaulting to USD, can be changed later in the settings.',
+                  );
                   return;
                 }
 

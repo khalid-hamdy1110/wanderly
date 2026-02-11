@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 import 'package:wanderly/core/ui/error_widget.dart' as app_error;
 import 'package:wanderly/core/ui/snackbars.dart';
@@ -21,8 +22,10 @@ class MyTripsPage extends StatefulWidget {
 class _MyTripsPageState extends State<MyTripsPage> {
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: customColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +34,11 @@ class _MyTripsPageState extends State<MyTripsPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16) +
                   const EdgeInsets.only(top: 12),
-              child: const CustomText('My Trips', fontSize: 24),
+              child: CustomText(
+                'My Trips',
+                fontSize: 24,
+                color: customColors.onBackground,
+              ),
             ),
             BlocBuilder<TripsPlanningCubit, TripsPlanningState>(
               builder: (context, state) {
@@ -45,7 +52,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
                     child: CustomText(
                       '${trips.length} trips planned',
                       fontSize: 14,
-                      color: const Color(0xFF717171),
+                      color: customColors.onMuted,
                     ),
                   ),
                   TripsPlanningError(:final message) => Padding(
@@ -61,7 +68,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
               },
             ),
             const SizedBox(height: 16),
-            const Divider(height: 1, color: Colors.black),
+            Divider(color: customColors.border),
             const SizedBox(height: 16),
             Expanded(
               child: Center(
@@ -73,6 +80,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
                         const CircularProgressIndicator(),
                       TripsPlanningLoaded(:final trips) => _tripCardsBuilder(
                         trips,
+                        context,
                       ),
                       TripsPlanningError(:final message) =>
                         app_error.AppErrorWidget(
@@ -91,10 +99,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
     );
   }
 
-  Widget _tripCardsBuilder(List<Trip> trips) {
+  Widget _tripCardsBuilder(List<Trip> trips, BuildContext context) {
+    final customColors = context.theme.customColors;
+
     if (trips.isEmpty) {
-      return const Center(
-        child: CustomText('No Trips!', fontSize: 32, color: Color(0xFF717171)),
+      return Center(
+        child: CustomText(
+          'No Trips!',
+          fontSize: 32,
+          color: customColors.onBackground,
+        ),
       );
     }
 
@@ -129,6 +143,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
             : TripType.ongoing;
 
         return Padding(
+          key: ValueKey(trip.tripId),
           padding: const EdgeInsets.only(bottom: 8),
           child: TripCard(
             tripTitle: trip.title,

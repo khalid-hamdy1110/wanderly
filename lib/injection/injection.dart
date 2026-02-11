@@ -18,7 +18,9 @@ import 'package:wanderly/core/domain/usecases/get_preferred_currency.dart';
 import 'package:wanderly/core/domain/usecases/get_supported_currencies.dart';
 import 'package:wanderly/core/domain/usecases/get_travel_interests.dart';
 import 'package:wanderly/core/domain/usecases/get_username.dart';
+import 'package:wanderly/core/domain/usecases/is_dark_mode.dart';
 import 'package:wanderly/core/domain/usecases/is_onboarding_completed.dart';
+import 'package:wanderly/core/domain/usecases/set_is_dark_mode.dart';
 import 'package:wanderly/core/domain/usecases/set_onboarding_completed.dart';
 import 'package:wanderly/core/domain/usecases/set_preferred_currency.dart';
 import 'package:wanderly/core/domain/usecases/set_travel_interests.dart';
@@ -170,6 +172,8 @@ Future<void> init() async {
   di.registerLazySingleton(() => AddExpense(di()));
   di.registerLazySingleton(() => DeleteExpense(di()));
   di.registerLazySingleton(() => GetExpensesForTrip(di()));
+  di.registerLazySingleton(() => SetIsDarkMode(di()));
+  di.registerLazySingleton(() => IsDarkMode(di()));
 
   // Cubits
   di.registerFactory(() => ExploreCubit(di(), di()));
@@ -187,6 +191,8 @@ Future<void> init() async {
       setTravelInterests: di(),
       isOnboardingCompleted: di(),
       setOnboardingCompleted: di(),
+      isDarkMode: di(),
+      setIsDarkMode: di(),
     ),
   );
   di.registerFactory(() => ProfileStatsCubit(di(), di()));

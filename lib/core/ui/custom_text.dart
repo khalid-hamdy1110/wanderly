@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 
 class CustomText extends StatelessWidget {
-  const CustomText(this.data, {super.key, this.color, this.backgroundColor, this.fontSize, this.fontWeight, this.fontStyle, this.letterSpacing, this.wordSpacing, this.textBaseline, this.height, this.foreground, this.background, this.shadows, this.fontFeatures, this.decoration, this.decorationColor, this.decorationStyle, this.decorationThickness, this.textAlign, this.textDirection, this.overflow, this.maxLines});
+  const CustomText(
+    this.data, {
+    super.key,
+    this.color,
+    this.backgroundColor,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+    this.letterSpacing,
+    this.wordSpacing,
+    this.textBaseline,
+    this.height,
+    this.foreground,
+    this.background,
+    this.shadows,
+    this.fontFeatures,
+    this.decoration,
+    this.decorationColor,
+    this.decorationStyle,
+    this.decorationThickness,
+    this.textAlign,
+    this.textDirection,
+    this.overflow,
+    this.maxLines,
+  });
 
   final String data;
   final Color? color;
@@ -29,30 +54,31 @@ class CustomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(data,
-    style: GoogleFonts.arimo(
-      color: color,
-      backgroundColor: backgroundColor,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      letterSpacing: letterSpacing,
-      wordSpacing: wordSpacing,
-      textBaseline: textBaseline,
-      height: height,
-      foreground: foreground,
-      background: background,
-      shadows: shadows,
-      fontFeatures: fontFeatures,
-      decoration: decoration,
-      decorationColor: decorationColor,
-      decorationStyle: decorationStyle,
-      decorationThickness: decorationThickness,
-    ),
-    textAlign: textAlign,
-    textDirection: textDirection,
-    overflow:  overflow,
-    maxLines: maxLines,
+    return Text(
+      data,
+      style: GoogleFonts.arimo(
+        color: color ?? context.theme.customColors.onCard,
+        backgroundColor: backgroundColor,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        fontStyle: fontStyle,
+        letterSpacing: letterSpacing,
+        wordSpacing: wordSpacing,
+        textBaseline: textBaseline,
+        height: height,
+        foreground: foreground,
+        background: background,
+        shadows: shadows,
+        fontFeatures: fontFeatures,
+        decoration: decoration,
+        decorationColor: decorationColor,
+        decorationStyle: decorationStyle,
+        decorationThickness: decorationThickness,
+      ),
+      textAlign: textAlign,
+      textDirection: textDirection,
+      overflow: overflow,
+      maxLines: maxLines,
     );
   }
 }

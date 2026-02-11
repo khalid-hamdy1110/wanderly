@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 
 class BudgetTiles extends StatelessWidget {
@@ -17,6 +18,8 @@ class BudgetTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -26,11 +29,11 @@ class BudgetTiles extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomText(title, fontSize: 12, color: const Color(0xFF717171)),
+          CustomText(title, fontSize: 12, color: customColors.onMuted),
           const SizedBox(height: 8),
-          CustomText(amount, fontSize: 18),
+          CustomText(amount, fontSize: 18, color: customColors.onCard),
           const SizedBox(height: 4),
-          CustomText(currency, fontSize: 12, color: const Color(0xFF717171)),
+          CustomText(currency, fontSize: 12, color: customColors.onMuted),
         ],
       ),
     );

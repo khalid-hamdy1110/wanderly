@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/country_card.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 import 'package:wanderly/features/02_explore/domain/extensions/country_extension.dart';
 import 'package:wanderly/core/presentation/cubits/favorites/favorites_cubit.dart';
 import 'package:wanderly/core/presentation/cubits/favorites/favorites_state.dart';
-import 'package:wanderly/features/02_explore/presentation/widgets/filter_pill.dart';
+import 'package:wanderly/core/ui/filter_pill.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 @RoutePage()
@@ -22,8 +23,10 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: customColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,12 +37,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   const EdgeInsets.only(top: 12),
               child: const CustomText('Favorites', fontSize: 24),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CustomText(
                 'Swipe left to remove a favorite!',
                 fontSize: 14,
-                color: Color(0xFF717171),
+                color: customColors.onMuted,
               ),
             ),
             const SizedBox(height: 16),
@@ -54,24 +57,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   Widget buildPill(String key, String label) {
                     final bool selected = activeSort == key;
                     final Color fillColor = selected
-                        ? const Color(0xFFFF385C)
-                        : Colors.white;
+                        ? customColors.primary
+                        : customColors.card;
                     final textStyle = GoogleFonts.arimo(
                       fontSize: 14,
-                      color: selected ? Colors.white : Colors.black,
+                      color: selected
+                          ? customColors.onPrimary
+                          : customColors.onCard,
                       fontWeight: FontWeight.bold,
                     );
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
+                      child: FilterPill(
+                        fillColor: fillColor,
+                        text: label,
+                        textStyle: textStyle,
                         onTap: () =>
                             context.read<FavoritesCubit>().setSort(key),
-                        child: FilterPill(
-                          fillColor: fillColor,
-                          text: label,
-                          textStyle: textStyle,
-                        ),
                       ),
                     );
                   }
@@ -90,7 +92,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               ),
             ),
             const SizedBox(height: 16),
-            const Divider(height: 1, color: Colors.black),
+            Divider(height: 1, color: customColors.border),
             const SizedBox(height: 16),
             Expanded(
               child: Padding(
@@ -101,11 +103,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is FavoritesLoaded) {
                       if (state.favoriteDestinations.isEmpty) {
-                        return const Center(
+                        return Center(
                           child: CustomText(
                             'No Favorites!',
                             fontSize: 32,
-                            color: Color(0xFF717171),
+                            color: customColors.onMuted,
                           ),
                         );
                       }
@@ -131,24 +133,22 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                             .read<FavoritesCubit>()
                                             .toggleFavoriteStatus(country);
                                       },
-                                      child: InkWell(
+                                      child: CountryCard(
+                                        source: 'favorites',
+                                        backgroundColor: customColors.card,
+                                        borderColor: customColors.border,
+                                        countryName: country.name,
+                                        flagUrl: country.flagUrl,
+                                        region: country.region,
+                                        briefInfo: country.briefInfo,
+                                        onFavorite: () {},
+                                        isFavorite: true,
+                                        includeFavoriteIcon: false,
                                         onTap: () => context.router.push(
                                           DestinationDetailsRoute(
                                             source: 'favorites',
                                             country: country,
                                           ),
-                                        ),
-                                        child: CountryCard(
-                                          source: 'favorites',
-                                          backgroundColor: Colors.white,
-                                          borderColor: const Color(0xFFEBEBEB),
-                                          countryName: country.name,
-                                          flagUrl: country.flagUrl,
-                                          region: country.region,
-                                          briefInfo: country.briefInfo,
-                                          onFavorite: () {},
-                                          isFavorite: true,
-                                          includeFavoriteIcon: false,
                                         ),
                                       ),
                                     );

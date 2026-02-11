@@ -1,7 +1,9 @@
 import 'package:amicons/amicons.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 
 @RoutePage()
 class NavigationBarShellPage extends StatelessWidget {
@@ -9,6 +11,8 @@ class NavigationBarShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return AutoTabsRouter(
       routes: const [
         ExploreRoute(),
@@ -19,67 +23,82 @@ class NavigationBarShellPage extends StatelessWidget {
       builder: (context, child) {
         return Scaffold(
           body: child,
-          bottomNavigationBar: NavigationBar(
-            backgroundColor: Colors.white,
-            indicatorColor: const Color.fromRGBO(225, 29, 72, 0.1),
-            elevation: 20,
-            height: 64,
-            selectedIndex: AutoTabsRouter.of(context).activeIndex,
-            onDestinationSelected: context.tabsRouter.setActiveIndex,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(
-                  Amicons.remix_compass_discover,
-                  size: 26,
-                  color: Color(0xFF717171),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: customColors.border)),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: NavigationBar(
+              backgroundColor: customColors.card,
+              indicatorColor: customColors.primary.withValues(alpha: 0),
+              elevation: 20,
+              labelBehavior:
+                  NavigationDestinationLabelBehavior.onlyShowSelected,
+              labelTextStyle: WidgetStatePropertyAll(
+                GoogleFonts.arimo(
+                  fontSize: 12,
+                  color: customColors.primary,
+                  fontWeight: FontWeight.w600,
                 ),
-                selectedIcon: Icon(
-                  Amicons.remix_compass_discover,
-                  size: 26,
-                  color: Color(0xFFFF385C),
-                ),
-                label: 'Explore',
               ),
-              NavigationDestination(
-                icon: Icon(
-                  Amicons.remix_heart,
-                  size: 26,
-                  color: Color(0xFF717171),
+              labelPadding: const EdgeInsets.all(0),
+              selectedIndex: AutoTabsRouter.of(context).activeIndex,
+              onDestinationSelected: context.tabsRouter.setActiveIndex,
+              destinations: [
+                NavigationDestination(
+                  icon: Icon(
+                    Amicons.lucide_house,
+                    size: 26,
+                    color: customColors.onMuted,
+                  ),
+                  selectedIcon: Icon(
+                    Amicons.lucide_house,
+                    size: 26,
+                    color: customColors.primary,
+                  ),
+                  label: 'Explore',
                 ),
-                selectedIcon: Icon(
-                  Amicons.remix_heart,
-                  size: 26,
-                  color: Color(0xFFFF385C),
+                NavigationDestination(
+                  icon: Icon(
+                    Amicons.lucide_heart,
+                    size: 26,
+                    color: customColors.onMuted,
+                  ),
+                  selectedIcon: Icon(
+                    Amicons.lucide_heart,
+                    size: 26,
+                    color: customColors.primary,
+                  ),
+                  label: 'Favorites',
                 ),
-                label: 'Favorites',
-              ),
-              NavigationDestination(
-                icon: Icon(
-                  Amicons.remix_suitcase,
-                  size: 26,
-                  color: Color(0xFF717171),
+                NavigationDestination(
+                  icon: Icon(
+                    Amicons.lucide_briefcase,
+                    size: 26,
+                    color: customColors.onMuted,
+                  ),
+                  selectedIcon: Icon(
+                    Amicons.lucide_briefcase,
+                    size: 26,
+                    color: customColors.primary,
+                  ),
+                  label: 'My Trips',
                 ),
-                selectedIcon: Icon(
-                  Amicons.remix_suitcase,
-                  size: 26,
-                  color: Color(0xFFFF385C),
+                NavigationDestination(
+                  icon: Icon(
+                    Amicons.lucide_user,
+                    size: 26,
+                    color: customColors.onMuted,
+                  ),
+                  selectedIcon: Icon(
+                    Amicons.lucide_user,
+                    size: 26,
+                    color: customColors.primary,
+                  ),
+                  label: 'Profile',
                 ),
-                label: 'My Trips',
-              ),
-              NavigationDestination(
-                icon: Icon(
-                  Amicons.remix_user,
-                  size: 26,
-                  color: Color(0xFF717171),
-                ),
-                selectedIcon: Icon(
-                  Amicons.remix_user,
-                  size: 26,
-                  color: Color(0xFFFF385C),
-                ),
-                label: 'Profile',
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

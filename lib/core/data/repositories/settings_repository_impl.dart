@@ -8,6 +8,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   static const _keyCurrency = 'preferred_currency';
   static const _keyInterests = 'travel_interests';
   static const _keyOnboarding = 'onboarding_completed';
+  static const _keyDarkMode = 'is_dark_mode';
 
   SettingsRepositoryImpl({required this.prefs});
 
@@ -49,5 +50,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
   @override
   List<String> getTravelInterests() {
     return prefs.getStringList(_keyInterests) ?? [];
+  }
+  
+  @override
+  Future<void> setIsDarkMode(bool isDarkMode) {
+    return prefs.setBool(_keyDarkMode, isDarkMode);
+  }
+
+  @override
+  bool isDarkMode() {
+    return prefs.getBool(_keyDarkMode) ?? false;
   }
 }

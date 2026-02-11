@@ -10,6 +10,7 @@ import 'package:wanderly/core/domain/entities/country.dart';
 import 'package:wanderly/core/domain/entities/exchange_rate.dart';
 import 'package:wanderly/core/presentation/cubits/exchange_rate/exchange_rate_cubit.dart';
 import 'package:wanderly/core/presentation/cubits/exchange_rate/exchange_rate_state.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
 import 'package:wanderly/core/ui/custom_text_field.dart';
 import 'package:wanderly/core/ui/snackbars.dart';
@@ -51,6 +52,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
     final Trip trip = context.select<TripsPlanningCubit, Trip>(
       (cubit) => cubit.state is TripsPlanningLoaded
           ? (cubit.state as TripsPlanningLoaded).trips.firstWhere(
@@ -77,7 +79,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: customColors.background,
       body: MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -101,19 +103,19 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     onTap: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Amicons.remix_arrow_left,
                           size: 20,
-                          color: Color(0xFF717171),
+                          color: customColors.onMuted,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         CustomText(
                           'Back',
                           fontSize: 14,
-                          color: Color(0xFF717171),
+                          color: customColors.onMuted,
                         ),
                       ],
                     ),
@@ -131,19 +133,29 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                       ),
-                      InkWell(
-                        onTap: () => _showEditDialog(context, trip),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 6,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: customColors.card,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: customColors.border),
+                        ),
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                            onTap: () => _showEditDialog(context, trip),
                             borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: const Color(0xFFEBEBEB)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 8,
+                              ),
+                              child: Icon(
+                                Amicons.remix_edit,
+                                size: 18,
+                                color: customColors.onCard,
+                              ),
+                            ),
                           ),
-                          child: const Icon(Amicons.remix_edit, size: 18),
                         ),
                       ),
                     ],
@@ -154,7 +166,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   child: CustomText(
                     trip.countryName,
                     fontSize: 14,
-                    color: const Color(0xFF717171),
+                    color: customColors.onMuted,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -167,72 +179,78 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         child: CustomText(
                           '${dateFormatter.format(trip.startDate)} - ${dateFormatter.format(trip.endDate)}',
                           fontSize: 14,
-                          color: const Color(0xFF717171),
+                          color: customColors.onMuted,
                         ),
                       ),
                       if (trip.isManuallyCompleted ||
                           widget.tripType != TripType.past)
-                        InkWell(
-                          onTap: () {
-                            Trip updatedTrip = Trip(
-                              tripId: trip.tripId,
-                              title: trip.title,
-                              countryName: trip.countryName,
-                              countryLatitude: trip.countryLatitude,
-                              countryLongitude: trip.countryLongitude,
-                              startDate: trip.startDate,
-                              endDate: trip.endDate,
-                              budget: trip.budget,
-                              budgetCurrency: trip.budgetCurrency,
-                              destinationCurrency: trip.destinationCurrency,
-                              notes: trip.notes,
-                              isManuallyCompleted: !trip.isManuallyCompleted,
-                            );
+                        Container(
+                          decoration: BoxDecoration(
+                            color: customColors.card,
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: customColors.border),
+                          ),
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () {
+                                Trip updatedTrip = Trip(
+                                  tripId: trip.tripId,
+                                  title: trip.title,
+                                  countryName: trip.countryName,
+                                  countryLatitude: trip.countryLatitude,
+                                  countryLongitude: trip.countryLongitude,
+                                  startDate: trip.startDate,
+                                  endDate: trip.endDate,
+                                  budget: trip.budget,
+                                  budgetCurrency: trip.budgetCurrency,
+                                  destinationCurrency: trip.destinationCurrency,
+                                  notes: trip.notes,
+                                  isManuallyCompleted:
+                                      !trip.isManuallyCompleted,
+                                );
 
-                            context.read<TripsPlanningCubit>().updateTrip(
-                              updatedTrip,
-                            );
-                            if (mounted) {
-                              showSuccessSnackBar(
-                                context,
-                                updatedTrip.isManuallyCompleted
-                                    ? 'Trip marked completed'
-                                    : 'Trip marked incomplete',
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 6,
-                              horizontal: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
+                                context.read<TripsPlanningCubit>().updateTrip(
+                                  updatedTrip,
+                                );
+                                if (mounted) {
+                                  showSuccessSnackBar(
+                                    context,
+                                    updatedTrip.isManuallyCompleted
+                                        ? 'Trip marked completed'
+                                        : 'Trip marked incomplete',
+                                  );
+                                }
+                              },
                               borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: const Color(0xFFEBEBEB),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      !trip.isManuallyCompleted
+                                          ? Amicons.remix_checkbox_circle
+                                          : Amicons.remix_checkbox_circle_fill,
+                                      size: 18,
+                                      color: trip.isManuallyCompleted
+                                          ? customColors.success
+                                          : customColors.onCard,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    CustomText(
+                                      trip.isManuallyCompleted
+                                          ? 'Completed'
+                                          : 'Complete',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: customColors.onCard,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  !trip.isManuallyCompleted
-                                      ? Amicons.remix_checkbox_circle
-                                      : Amicons.remix_checkbox_circle_fill,
-                                  size: 18,
-                                  color: trip.isManuallyCompleted
-                                      ? const Color(0xFF34D399)
-                                      : const Color(0xFF000000),
-                                ),
-                                const SizedBox(width: 8),
-                                CustomText(
-                                  trip.isManuallyCompleted
-                                      ? 'Completed'
-                                      : 'Complete',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ],
                             ),
                           ),
                         ),
@@ -248,12 +266,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         ? 'No additional notes.'
                         : trip.notes!,
                     fontSize: 14,
-                    color: const Color(0xFF717171),
+                    color: customColors.onMuted,
                   ),
                 ),
                 const SizedBox(height: 12),
 
-                const Divider(),
+                Divider(color: customColors.border),
 
                 Expanded(
                   child: BlocBuilder<TripExpensesCubit, TripExpensesState>(
@@ -315,9 +333,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     return CustomPaint(
                                       painter: BudgetUsageProgressPainter(
                                         progress: value,
-                                        backgroundColor: const Color(
-                                          0xFFF3F4F6,
-                                        ),
+                                        backgroundColor: customColors.accent,
                                         fillColor: value >= 1
                                             ? const Color(0xFFE11D48)
                                             : value >= 0.75
@@ -339,7 +355,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     CustomText(
                                       '${(_getBudgetUsage(expenses, trip) * 100).toInt()}% used',
                                       fontSize: 12,
-                                      color: const Color(0xFF717171),
+                                      color: customColors.onMuted,
                                     ),
                                   ],
                                 ),
@@ -356,7 +372,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                         title: 'Budget',
                                         amount: trip.budget.toString(),
                                         currency: trip.budgetCurrency,
-                                        color: const Color(0xFFF7F7F7),
+                                        color: customColors.card,
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -367,7 +383,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                           expenses,
                                         ).toString(),
                                         currency: trip.budgetCurrency,
-                                        color: const Color(0xFFF7F7F7),
+                                        color: customColors.card,
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -381,13 +397,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                         currency: trip.budgetCurrency,
                                         color:
                                             _getBudgetUsage(expenses, trip) >= 1
-                                            ? const Color.fromRGBO(
-                                                225,
-                                                29,
-                                                72,
-                                                0.1,
-                                              )
-                                            : const Color(0xFFDCFCE7),
+                                            ? customColors.destructive
+                                                  .withValues(alpha: 0.1)
+                                            : customColors.success.withValues(
+                                                alpha: 0.1,
+                                              ),
                                       ),
                                     ),
                                   ],
@@ -407,34 +421,44 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
-                                    InkWell(
-                                      onTap: () =>
-                                          _showAddExpenseDialog(context, trip),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 6,
-                                          horizontal: 12,
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: customColors.primary,
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(999),
                                         ),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFFF385C),
-                                          borderRadius: BorderRadius.all(
+                                      ),
+                                      child: Material(
+                                        type: MaterialType.transparency,
+                                        child: InkWell(
+                                          onTap: () => _showAddExpenseDialog(
+                                            context,
+                                            trip,
+                                          ),
+                                          borderRadius: const BorderRadius.all(
                                             Radius.circular(999),
                                           ),
-                                        ),
-                                        child: const Row(
-                                          children: [
-                                            Icon(
-                                              Amicons.remix_add,
-                                              size: 16,
-                                              color: Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 6,
+                                              horizontal: 12,
                                             ),
-                                            SizedBox(width: 4),
-                                            CustomText(
-                                              'Add',
-                                              fontSize: 14,
-                                              color: Colors.white,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Amicons.remix_add,
+                                                  size: 16,
+                                                  color: customColors.onPrimary,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                CustomText(
+                                                  'Add',
+                                                  fontSize: 14,
+                                                  color: customColors.onPrimary,
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -450,22 +474,26 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: expenses.isEmpty
-                                              ? const Color(0xFFF7F7F7)
-                                              : Colors.white,
+                                              ? customColors.accent
+                                              : customColors.background,
                                           borderRadius: BorderRadius.circular(
                                             16,
                                           ),
                                         ),
-                                        child: const Center(
+                                        child: Center(
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              CustomText('💰', fontSize: 40),
-                                              SizedBox(height: 12),
+                                              const CustomText(
+                                                '💰',
+                                                fontSize: 40,
+                                              ),
+                                              const SizedBox(height: 12),
                                               CustomText(
                                                 'No expenses yet.',
                                                 fontSize: 16,
-                                                color: Color(0xFF717171),
+                                                color:
+                                                    customColors.onBackground,
                                               ),
                                             ],
                                           ),
@@ -491,7 +519,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           child: CustomText(
                             'Error: $message',
                             fontSize: 14,
-                            color: const Color(0xFF717171),
+                            color: customColors.onMuted,
                           ),
                         ),
                       };
@@ -508,6 +536,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   Widget _buildExpenseTile(Expense expense, Trip trip, BuildContext context) {
     final bool isRemoving = _removingExpenseIds.contains(expense.id);
+    final customColors = context.theme.customColors;
+
     return AnimatedSize(
       duration: _removeAnimDuration,
       curve: Curves.easeInOut,
@@ -521,9 +551,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: customColors.card,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFEBEBEB)),
+            border: Border.all(color: customColors.border),
           ),
           child: Row(
             children: [
@@ -537,18 +567,19 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           '${expense.category}  • ',
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
+                          color: customColors.onCard,
                         ),
                         CustomText(
                           DateFormat('dd MMM yyyy').format(expense.date),
                           fontSize: 12,
-                          color: const Color(0xFF717171),
+                          color: customColors.onMuted,
                         ),
                       ],
                     ),
                     CustomText(
                       expense.title,
                       fontSize: 12,
-                      color: const Color(0xFF717171),
+                      color: customColors.onMuted,
                     ),
                   ],
                 ),
@@ -564,10 +595,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   BlocBuilder<ExchangeRateCubit, ExchangeRateState>(
                     builder: (context, state) {
                       if (state is ExchangeRateLoading) {
-                        return const CustomText(
+                        return CustomText(
                           'Loading...',
                           fontSize: 12,
-                          color: Color(0xFF717171),
+                          color: customColors.onMuted,
                         );
                       } else if (state is ExchangeRateLoaded) {
                         final exchangeRate = state.exchangeRate;
@@ -584,13 +615,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         return CustomText(
                           '≈ ${convertedAmount.toStringAsFixed(2)} ${trip.destinationCurrency}',
                           fontSize: 12,
-                          color: const Color(0xFF717171),
+                          color: customColors.onMuted,
                         );
                       } else {
-                        return const CustomText(
+                        return CustomText(
                           'N/A',
                           fontSize: 12,
-                          color: Color(0xFF717171),
+                          color: customColors.onMuted,
                         );
                       }
                     },
@@ -598,39 +629,45 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 ],
               ),
               const SizedBox(width: 8),
-              InkWell(
-                onTap: isRemoving
-                    ? null
-                    : () async {
-                        setState(() {
-                          _removingExpenseIds.add(expense.id);
-                        });
-                        await Future.delayed(_removeAnimDuration);
-                        if (!context.mounted) return;
-                        try {
-                          context
-                              .read<TripExpensesCubit>()
-                              .deleteExistingExpense(expense.id, trip.tripId);
-                          if (mounted) {
-                            showSuccessSnackBar(context, 'Expense removed');
+              Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  onTap: isRemoving
+                      ? null
+                      : () async {
+                          setState(() {
+                            _removingExpenseIds.add(expense.id);
+                          });
+                          await Future.delayed(_removeAnimDuration);
+                          if (!context.mounted) return;
+                          try {
+                            context
+                                .read<TripExpensesCubit>()
+                                .deleteExistingExpense(expense.id, trip.tripId);
+                            if (mounted) {
+                              showSuccessSnackBar(context, 'Expense removed');
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              showErrorSnackBar(
+                                context,
+                                'Failed to remove expense',
+                              );
+                            }
+                          } finally {
+                            // Restore visibility state (removed if success, visible if failure)
+                            if (mounted) {
+                              setState(() {
+                                _removingExpenseIds.remove(expense.id);
+                              });
+                            }
                           }
-                        } catch (e) {
-                          if (mounted) {
-                            showErrorSnackBar(
-                              context,
-                              'Failed to remove expense',
-                            );
-                          }
-                        } finally {
-                          // Restore visibility state (removed if success, visible if failure)
-                          if (mounted) {
-                            setState(() {
-                              _removingExpenseIds.remove(expense.id);
-                            });
-                          }
-                        }
-                      },
-                child: const Icon(Amicons.remix_delete_bin, color: Colors.red),
+                        },
+                  child: Icon(
+                    Amicons.remix_delete_bin,
+                    color: customColors.destructive,
+                  ),
+                ),
               ),
             ],
           ),
@@ -652,6 +689,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     BuildContext cubitContext,
     Trip trip,
   ) async {
+    final customColors = cubitContext.theme.customColors;
     final formKey = GlobalKey<FormState>();
     final amountController = TextEditingController();
     String selectedCategory = 'Other';
@@ -672,7 +710,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 fontWeight: FontWeight.bold,
                 textAlign: TextAlign.center,
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: customColors.card,
               content: SingleChildScrollView(
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
@@ -693,6 +731,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           textAlign: TextAlign.start,
+                          color: customColors.onCard,
                         ),
                         const SizedBox(height: 8),
                         CustomTextField(
@@ -709,7 +748,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           hint: CustomText(
                             0.00.toString(),
                             fontSize: 16,
-                            color: const Color(0xFF717171),
+                            color: customColors.textFieldPlaceholder,
                           ),
                           controller: amountController,
                           keyboardType: const TextInputType.numberWithOptions(
@@ -718,16 +757,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        const CustomText(
+                        CustomText(
                           'Category',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           textAlign: TextAlign.start,
+                          color: customColors.onCard,
                         ),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<String>(
                           initialValue: 'Other',
-                          dropdownColor: Colors.white,
+                          dropdownColor: customColors.card,
                           items: expenseCategories
                               .map(
                                 (category) => DropdownMenuItem<String>(
@@ -739,14 +779,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           onChanged: (value) {
                             selectedCategory = value!;
                           },
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                               vertical: 8,
                               horizontal: 12,
                             ),
                             filled: true,
-                            fillColor: Color(0xFFF7F7F7),
-                            border: OutlineInputBorder(
+                            fillColor: customColors.secondary,
+                            border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(16),
@@ -770,10 +810,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             }
                             return null;
                           },
-                          hint: const CustomText(
+                          hint: CustomText(
                             'Enter a description',
                             fontSize: 16,
-                            color: Color(0xFF717171),
+                            color: customColors.textFieldPlaceholder,
                           ),
                           controller: descriptionController,
                           keyboardType: TextInputType.text,
@@ -815,15 +855,15 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const CustomText(
+                  child: CustomText(
                     'Cancel',
-                    color: Color(0xFFFF385C),
+                    color: customColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF385C),
+                    backgroundColor: customColors.primary,
                   ),
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
@@ -862,6 +902,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   }
 
   Future<void> _showEditDialog(BuildContext cubitContext, Trip trip) async {
+    final customColors = cubitContext.theme.customColors;
     final formKey = GlobalKey<FormState>();
     final tripNameController = TextEditingController(text: trip.title);
     final budgetController = TextEditingController(
@@ -892,7 +933,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 fontWeight: FontWeight.bold,
                 textAlign: TextAlign.center,
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: customColors.background,
               content: SingleChildScrollView(
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
@@ -907,19 +948,20 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CustomText(
+                        CustomText(
                           'Trip Name',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: customColors.onBackground,
                         ),
                         const SizedBox(height: 8.0),
                         CustomTextField(
                           controller: tripNameController,
                           keyboardType: TextInputType.text,
-                          hint: const CustomText(
+                          hint: CustomText(
                             'Enter trip name',
                             fontSize: 16,
-                            color: Color(0xFF717171),
+                            color: customColors.textFieldPlaceholder,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -1005,21 +1047,21 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         ),
 
                         if (hasError || showDateError)
-                          const Padding(
-                                padding: EdgeInsets.only(top: 8.0),
+                          Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
                                 child: Row(
                                   children: [
                                     Icon(
                                       Amicons.remix_error_warning,
                                       size: 14,
-                                      color: Color(0xFFE11D48),
+                                      color: customColors.destructive,
                                     ),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: CustomText(
                                         'Please select valid start and end dates.',
-                                        color: Color(0xFFE11D48),
+                                        color: customColors.destructive,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -1040,14 +1082,15 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           'Estimated Budget (${trip.budgetCurrency})',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: customColors.onBackground,
                         ),
                         const SizedBox(height: 8.0),
                         CustomTextField(
                           controller: budgetController,
-                          hint: const CustomText(
+                          hint: CustomText(
                             'Enter amount',
                             fontSize: 16,
-                            color: Color(0xFF717171),
+                            color: customColors.textFieldPlaceholder,
                           ),
                           keyboardType: TextInputType.number,
                           icon: Amicons.remix_currency,
@@ -1064,18 +1107,19 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         ),
                         const SizedBox(height: 20.0),
 
-                        const CustomText(
+                        CustomText(
                           'Notes (Optional)',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: customColors.onBackground,
                         ),
                         const SizedBox(height: 8.0),
                         CustomTextField(
                           controller: noteController,
-                          hint: const CustomText(
+                          hint: CustomText(
                             'Enter additional notes...',
                             fontSize: 16,
-                            color: Color(0xFF717171),
+                            color: customColors.textFieldPlaceholder,
                           ),
                           minLines: 3,
                           maxLines: 9,
@@ -1092,15 +1136,15 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const CustomText(
+                  child: CustomText(
                     'Cancel',
-                    color: Color(0xFFFF385C),
+                    color: customColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF385C),
+                    backgroundColor: customColors.primary,
                   ),
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
@@ -1141,7 +1185,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       }
                     }
                   },
-                  child: const CustomText('Edit', fontWeight: FontWeight.bold),
+                  child: CustomText(
+                    'Edit',
+                    fontWeight: FontWeight.bold,
+                    color: customColors.onPrimary,
+                  ),
                 ),
               ],
             );

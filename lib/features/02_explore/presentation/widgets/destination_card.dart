@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderly/core/theming/theme_extensions.dart';
 
 class DestinationCard extends StatelessWidget {
   const DestinationCard({
@@ -14,11 +15,13 @@ class DestinationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.theme.customColors;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: bgColor,
-        border: Border.all(color: const Color(0xFFEBEBEB)),
+        border: Border.all(color: customColors.border),
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
