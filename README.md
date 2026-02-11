@@ -78,9 +78,8 @@ State is immutable & Equatable-enabled for efficient rebuilds.
 - **State Management**: Bloc/Cubit
 - **DI**: get_it
 - **Persistence**: ObjectBox (Trips, Expenses), SharedPreferences (Settings)
-- **Networking**: `http` (or similar; adjust based on actual implementation)
+- **Networking**: `dio`
 - **Animation**: `flutter_animate`
-- **Formatting / Lint**: `analysis_options.yaml`
 
 ---
 ## 5. Project Structure (High-level)
@@ -90,12 +89,15 @@ lib/
 	core/
 		constants/               # Static app constants (travel interests, etc.)
 		data/                    # Data-layer shared pieces
+		database/				 # Objectbox
 		domain/                  # Core domain entities & base abstractions
 		error/                   # Failure classes & mappers
 		network/                 # Retry logic, networking helpers
 		presentation/            # Shared cubits (settings, profile stats, exchange rate)
 		route_config/            # AutoRoute definitions
+		theming/				 # All theming related definitions
 		ui/                      # Reusable widgets (error widget, snackbars, text fields)
+		utilities				 # Useful Functions
 	features/
 		01_onboarding/
 		02_explore/
@@ -113,7 +115,6 @@ objectbox-model.json        # ObjectBox schema definition
 - Flutter SDK (>= 3.10) installed & on PATH
 - Dart SDK bundled with Flutter
 - Android Studio / Xcode for platform builds
-- (Optional) Node.js for web tooling (if experimenting with PWAs)
 
 ### Clone & Install
 ```bash
@@ -143,15 +144,15 @@ flutter run -d windows  # or macos, linux
 
 ### Recommended VS Code Extensions
 - Dart & Flutter
-- Bloc
+- file-icons
 - Error Lens
+- Image preview
+- Vxplain
 
 ---
 ## 7. Configuration (Environment / API Keys)
-If remote APIs require keys (e.g., Weather, Exchange Rate):
-Create a `.env` or use Dart-define flags:
+Create a `.env` and define:
 ```
-# .env (example)
 OPENWEATHER_API_KEY=YOUR_API_KEY
 UNSPLASH_ACCESS_KEY=YOUR_API_KEY
 EXCHANGE_RATES_API_KEY=YOUR_API_KEY
@@ -179,8 +180,6 @@ UI surfaces errors through:
 - `AppErrorWidget` (retry button delegates back to Cubit load method)
 - Snackbars for transient action feedback (success & failure)
 - Soft-fail patterns (e.g., partial stats load while ignoring a favorites error)
-
-Retry logic (`core/network/retry.dart`) provides exponential backoff for transient network issues.
 
 ---
 ## 10. Known Limitations / Future Improvements
