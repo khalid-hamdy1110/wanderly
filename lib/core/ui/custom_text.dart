@@ -29,6 +29,8 @@ class CustomText extends StatelessWidget {
     this.maxLines,
   });
 
+  static final TextStyle _style = GoogleFonts.arimo();
+
   final String data;
   final Color? color;
   final Color? backgroundColor;
@@ -56,7 +58,7 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       data,
-      style: GoogleFonts.arimo(
+      style: _style.copyWith(
         color: color ?? context.theme.customColors.onCard,
         backgroundColor: backgroundColor,
         fontSize: fontSize,

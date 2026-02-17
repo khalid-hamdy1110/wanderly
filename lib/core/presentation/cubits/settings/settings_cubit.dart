@@ -34,25 +34,25 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetOnboardingCompleted setOnboardingCompleted,
     required IsDarkMode isDarkMode,
     required SetIsDarkMode setIsDarkMode,
-  })  : _getUsername = getUsername,
-        _setUsername = setUsername,
-        _getPreferredCurrency = getPreferredCurrency,
-        _setPreferredCurrency = setPreferredCurrency,
-        _getTravelInterests = getTravelInterests,
-        _setTravelInterests = setTravelInterests,
-        _isOnboardingCompleted = isOnboardingCompleted,
-        _setOnboardingCompleted = setOnboardingCompleted,
-        _isDarkMode = isDarkMode,
-        _setIsDarkMode = setIsDarkMode,
-        super(
-          SettingsState(
-            username: getUsername(),
-            preferredCurrency: getPreferredCurrency(),
-            travelInterests: getTravelInterests(),
-            onboardingCompleted: isOnboardingCompleted(),
-            isDarkMode: isDarkMode(),
-          ),
-        );
+  }) : _getUsername = getUsername,
+       _setUsername = setUsername,
+       _getPreferredCurrency = getPreferredCurrency,
+       _setPreferredCurrency = setPreferredCurrency,
+       _getTravelInterests = getTravelInterests,
+       _setTravelInterests = setTravelInterests,
+       _isOnboardingCompleted = isOnboardingCompleted,
+       _setOnboardingCompleted = setOnboardingCompleted,
+       _isDarkMode = isDarkMode,
+       _setIsDarkMode = setIsDarkMode,
+       super(
+         SettingsState(
+           username: getUsername(),
+           preferredCurrency: getPreferredCurrency(),
+           travelInterests: getTravelInterests(),
+           onboardingCompleted: isOnboardingCompleted(),
+           isDarkMode: isDarkMode(),
+         ),
+       );
 
   Future<void> refresh() async {
     emit(
@@ -87,7 +87,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> setIsDarkMode(bool isDarkMode) async {
-    await _setIsDarkMode(isDarkMode);
     emit(state.copyWith(isDarkMode: isDarkMode));
+    await _setIsDarkMode(isDarkMode);
   }
 }

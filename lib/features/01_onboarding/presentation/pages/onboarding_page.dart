@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wanderly/core/constants/travel_interests.dart';
+import 'package:wanderly/core/presentation/cubits/settings/settings_cubit.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
 import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
@@ -281,6 +282,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   );
                   context.read<SetPrefsCubit>().setOnboardingCompleted(false);
 
+                  di<SettingsCubit>().refresh();
                   context.router.replace(const NavigationBarShellRoute());
                 },
                 label: 'Get Started',
@@ -423,6 +425,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   context.read<SetPrefsCubit>().setUsernamePref(
                     _nameController.text,
                   );
+                  di<SettingsCubit>().refresh();
                   context.router.replace(const NavigationBarShellRoute());
                 },
                 label: 'Skip',

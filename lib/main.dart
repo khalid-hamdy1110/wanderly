@@ -38,12 +38,20 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  late ThemeMode _themeMode;
+  late final ValueNotifier<ThemeMode> _themeMode;
 
   @override
   void initState() {
     super.initState();
-    _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    _themeMode = ValueNotifier(
+      widget.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+    );
+  }
+
+  @override
+  void dispose() {
+    _themeMode.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,27 +71,35 @@ class _MainAppState extends State<MainApp> {
         BlocProvider(create: (_) => di.get<ProfileStatsCubit>()..load()),
       ],
       child: BlocListener<SettingsCubit, SettingsState>(
-        listenWhen: (previous, current) => previous.isDarkMode != current.isDarkMode,
+        listenWhen: (previous, current) =>
+            previous.isDarkMode != current.isDarkMode,
         listener: (context, state) {
           setState(() {
-            _themeMode = state.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+            _themeMode.value = state.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light;
           });
         },
-        child: MaterialApp.router(
-            title: 'Wanderly',
-            routerConfig: widget.appRouter.config(
-              navigatorObservers: () => [di.get<AutoRouteObserver>()],
-            ),
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: _themeMode,
-            themeAnimationDuration: const Duration(milliseconds: 500),
-            themeAnimationCurve: Curves.easeInOut,
-            scrollBehavior: const MaterialScrollBehavior().copyWith(
-              overscroll: false,
-            ),
-          ),
+        child: ValueListenableBuilder<ThemeMode>(
+          valueListenable: _themeMode,
+          builder: (context, themeMode, _) {
+            return MaterialApp.router(
+              title: 'Wanderly',
+              routerConfig: widget.appRouter.config(
+                navigatorObservers: () => [di.get<AutoRouteObserver>()],
+              ),
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: themeMode,
+              themeAnimationDuration: const Duration(milliseconds: 300),
+              themeAnimationCurve: Curves.easeInOut,
+              scrollBehavior: const MaterialScrollBehavior().copyWith(
+                overscroll: false,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

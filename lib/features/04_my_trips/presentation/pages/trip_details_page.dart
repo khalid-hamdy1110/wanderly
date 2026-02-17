@@ -271,7 +271,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 ),
                 const SizedBox(height: 12),
 
-                Divider(color: customColors.border),
+                Divider(height: 0, color: customColors.border),
 
                 Expanded(
                   child: BlocBuilder<TripExpensesCubit, TripExpensesState>(
@@ -372,7 +372,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                         title: 'Budget',
                                         amount: trip.budget.toString(),
                                         currency: trip.budgetCurrency,
-                                        color: customColors.card,
+                                        color: customColors.secondary,
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -383,7 +383,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                           expenses,
                                         ).toString(),
                                         currency: trip.budgetCurrency,
-                                        color: customColors.card,
+                                        color: customColors.secondary,
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -398,9 +398,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                         color:
                                             _getBudgetUsage(expenses, trip) >= 1
                                             ? customColors.destructive
-                                                  .withValues(alpha: 0.1)
+                                                  .withValues(alpha: 0.3)
                                             : customColors.success.withValues(
-                                                alpha: 0.1,
+                                                alpha: 0.3,
                                               ),
                                       ),
                                     ),
@@ -471,6 +471,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
                               expenses.isEmpty
                                   ? SliverFillRemaining(
+                                      hasScrollBody: false,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: expenses.isEmpty
@@ -881,8 +882,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         ),
                       );
 
-                      if (mounted) Navigator.of(context).pop();
                       if (mounted) {
+                        Navigator.of(context).pop();
                         showSuccessSnackBar(context, 'Expense added');
                       }
                     } catch (e) {
@@ -891,7 +892,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       }
                     }
                   },
-                  child: const CustomText('Add', fontWeight: FontWeight.bold),
+                  child: CustomText(
+                    'Add',
+                    fontWeight: FontWeight.bold,
+                    color: customColors.onPrimary,
+                  ),
                 ),
               ],
             );

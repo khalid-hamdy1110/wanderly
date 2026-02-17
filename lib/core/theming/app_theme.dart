@@ -4,7 +4,7 @@ import 'package:wanderly/core/theming/custom_components/custom_colors.dart';
 class AppTheme {
   static const _primary = Color(0xFFFF385C);
 
-  static ThemeData get light => ThemeData(
+  static final ThemeData light = ThemeData(
     brightness: Brightness.light,
     colorScheme: const ColorScheme.light(
       primary: _primary,
@@ -22,7 +22,7 @@ class AppTheme {
     ),
   );
 
-  static ThemeData get dark => ThemeData(
+  static final ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     colorScheme: const ColorScheme.dark(
       primary: _primary,

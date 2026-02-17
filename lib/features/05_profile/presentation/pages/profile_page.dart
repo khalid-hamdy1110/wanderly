@@ -378,7 +378,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     const SizedBox(height: 12),
                     CustomText(
-                      'Wanderly v1.0.0\n\nWanderly is a travel planning app designed to help you explore the world with ease. Plan your trips, discover new destinations, and keep track of your favorite places all in one app.',
+                      'Wanderly is a travel planning app designed to help you explore the world with ease. Plan your trips, discover new destinations, and keep track of your favorite places all in one app.\n\n Developed by Khalid Hamdy\n © 2026 Wanderly.',
                       fontSize: 14,
                       color: customColors.onMuted,
                     ),
@@ -432,10 +432,18 @@ class _ProfilePageState extends State<ProfilePage>
                   onPressed: () async {
                     final clearCache = di<ClearCache>();
                     await clearCache();
+
                     if (context.mounted) {
-                      di<FavoritesCubit>().fetchFavoriteCountries();
-                      di<TripsPlanningCubit>().getAllTrips();
-                      di<ProfileStatsCubit>().load();
+                      final favoritesCubit = context.read<FavoritesCubit>();
+                      final tripsCubit = context.read<TripsPlanningCubit>();
+                      final profileStatsCubit = context
+                          .read<ProfileStatsCubit>();
+                      final settingsCubit = context.read<SettingsCubit>();
+
+                      favoritesCubit.fetchFavoriteCountries();
+                      tripsCubit.getAllTrips();
+                      profileStatsCubit.load();
+                      settingsCubit.refresh();
 
                       showSuccessSnackBar(context, 'All data cleared');
                       context.router.replaceAll([const OnboardingRoute()]);

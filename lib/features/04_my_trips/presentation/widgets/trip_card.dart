@@ -10,6 +10,7 @@ enum TripType { ongoing, upcoming, past }
 class TripCard extends StatefulWidget {
   const TripCard({
     super.key,
+    required this.isManuallyCompleted,
     required this.tripTitle,
     required this.countryName,
     required this.startDate,
@@ -22,6 +23,7 @@ class TripCard extends StatefulWidget {
     required this.onTap,
   });
 
+  final bool isManuallyCompleted;
   final String tripTitle;
   final String countryName;
   final DateTime startDate;
@@ -216,6 +218,22 @@ class _TripCardState extends State<TripCard> {
 
   Widget _tripTypePillBuilder(BuildContext context) {
     final customColors = context.theme.customColors;
+
+    if (widget.isManuallyCompleted) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
+          color: customColors.completed.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: CustomText(
+          'Completed',
+          fontSize: 12,
+          color: customColors.completed,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
 
     switch (widget.tripType) {
       case TripType.ongoing:

@@ -132,11 +132,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
           trip.endDate.day,
         );
 
-        final tripType = trip.isManuallyCompleted
-            ? TripType.past
-            : end.isBefore(start)
-            ? TripType.past
-            : today.isBefore(start)
+        final tripType = today.isBefore(start)
             ? TripType.upcoming
             : today.isAfter(end)
             ? TripType.past
@@ -146,6 +142,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
           key: ValueKey(trip.tripId),
           padding: const EdgeInsets.only(bottom: 8),
           child: TripCard(
+            isManuallyCompleted: trip.isManuallyCompleted,
             tripTitle: trip.title,
             countryName: trip.countryName,
             startDate: trip.startDate,
