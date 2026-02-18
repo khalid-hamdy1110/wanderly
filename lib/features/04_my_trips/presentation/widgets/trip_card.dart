@@ -118,7 +118,7 @@ class _TripCardState extends State<TripCard> {
                         child: InkWell(
                           onTap: _animateAndDelete,
                           child: Icon(
-                            Amicons.remix_delete_bin,
+                            Amicons.iconly_delete_fill,
                             color: customColors.destructive,
                           ),
                         ),

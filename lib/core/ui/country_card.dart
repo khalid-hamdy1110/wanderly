@@ -38,7 +38,6 @@ class CountryCard extends StatelessWidget {
     final customColors = context.theme.customColors;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(color: borderColor),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/custom_text.dart';
+import 'package:wanderly/core/utilities/useful_functions.dart';
 
-class BudgetTiles extends StatelessWidget {
+class BudgetTiles extends StatefulWidget {
   const BudgetTiles({
     super.key,
     required this.title,
@@ -12,9 +13,16 @@ class BudgetTiles extends StatelessWidget {
   });
 
   final String title;
-  final String amount;
+  final double amount;
   final String currency;
   final Color color;
+
+  @override
+  State<BudgetTiles> createState() => _BudgetTilesState();
+}
+
+class _BudgetTilesState extends State<BudgetTiles> {
+  bool _formatAmount = true;
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +31,40 @@ class BudgetTiles extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color,
+        color: widget.color,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomText(title, fontSize: 12, color: customColors.onMuted),
+          CustomText(widget.title, fontSize: 12, color: customColors.onMuted),
           const SizedBox(height: 8),
-          CustomText(amount, fontSize: 18, color: customColors.onCard),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _formatAmount = !_formatAmount;
+              });
+            },
+            child: _formatAmount
+                ? CustomText(
+                    formatNumber(widget.amount),
+                    fontSize: 18,
+                    color: customColors.onCard,
+                  )
+                : FittedBox(
+                    child: CustomText(
+                      widget.amount.toString(),
+                      fontSize: 18,
+                      color: customColors.onCard,
+                    ),
+                  ),
+          ),
           const SizedBox(height: 4),
-          CustomText(currency, fontSize: 12, color: customColors.onMuted),
+          CustomText(
+            widget.currency,
+            fontSize: 12,
+            color: customColors.onMuted,
+          ),
         ],
       ),
     );

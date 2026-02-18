@@ -69,8 +69,14 @@ class ExplorePage extends StatelessWidget {
                       const SizedBox(height: 18),
                       _buildSearchBar(context),
                       const SizedBox(height: 16),
-                      _buildTravelInterests(selectedInterest, context),
-                      const SizedBox(height: 8),
+                      if (context
+                          .watch<SettingsCubit>()
+                          .state
+                          .travelInterests
+                          .isNotEmpty) ...[
+                        _buildTravelInterests(selectedInterest, context),
+                        const SizedBox(height: 8),
+                      ],
                       Divider(color: customColors.border),
                       const SizedBox(height: 12),
                       Padding(
@@ -127,22 +133,25 @@ class ExplorePage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final country = countries[index];
 
-                      return CountryCard(
-                        source: 'explore',
-                        backgroundColor: customColors.card,
-                        borderColor: customColors.border,
-                        countryName: country.name,
-                        flagUrl: country.flagUrl,
-                        region: country.region,
-                        briefInfo: country.briefInfo,
-                        onFavorite: () => context
-                            .read<FavoritesCubit>()
-                            .toggleFavoriteStatus(country),
-                        isFavorite: favorites.contains(country),
-                        onTap: () => context.router.push(
-                          DestinationDetailsRoute(
-                            country: country,
-                            source: 'explore',
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: CountryCard(
+                          source: 'explore',
+                          backgroundColor: customColors.card,
+                          borderColor: customColors.border,
+                          countryName: country.name,
+                          flagUrl: country.flagUrl,
+                          region: country.region,
+                          briefInfo: country.briefInfo,
+                          onFavorite: () => context
+                              .read<FavoritesCubit>()
+                              .toggleFavoriteStatus(country),
+                          isFavorite: favorites.contains(country),
+                          onTap: () => context.router.push(
+                            DestinationDetailsRoute(
+                              country: country,
+                              source: 'explore',
+                            ),
                           ),
                         ),
                       );

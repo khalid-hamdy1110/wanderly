@@ -64,8 +64,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
         break;
       case 'recent':
       default:
-        // Keep the base order (assumed most-recent-first from repository).
-        // No sorting; return a fresh copy to trigger UI updates if needed.
+        list.replaceRange(0, list.length, list.reversed);
         break;
     }
     return list;

@@ -410,52 +410,70 @@ class _ProfilePageState extends State<ProfilePage>
                 color: customColors.onBackground,
               ),
               backgroundColor: customColors.background,
-              content: CustomText(
-                'This action will delete all your data including trips, expenses, and settings. This cannot be undone. Are you sure you want to proceed?',
-                fontSize: 14,
-                color: customColors.onMuted,
-                textAlign: TextAlign.center,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomText(
+                    'This action will delete all your data including trips, expenses, and settings. This cannot be undone. Are you sure you want to proceed?',
+                    fontSize: 14,
+                    color: customColors.onMuted,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: customColors.primary,
+                          ),
+                          child: CustomText(
+                            'Cancel',
+                            color: customColors.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () async {
+                            final clearCache = di<ClearCache>();
+                            await clearCache();
+
+                            if (context.mounted) {
+                              final favoritesCubit = context
+                                  .read<FavoritesCubit>();
+                              final tripsCubit = context
+                                  .read<TripsPlanningCubit>();
+                              final profileStatsCubit = context
+                                  .read<ProfileStatsCubit>();
+                              final settingsCubit = context
+                                  .read<SettingsCubit>();
+
+                              favoritesCubit.fetchFavoriteCountries();
+                              tripsCubit.getAllTrips();
+                              profileStatsCubit.load();
+                              settingsCubit.refresh();
+
+                              showSuccessSnackBar(context, 'All data cleared');
+                              context.router.replaceAll([
+                                const OnboardingRoute(),
+                              ]);
+                            }
+                          },
+                          child: CustomText(
+                            'Clear Data',
+                            fontWeight: FontWeight.bold,
+                            color: customColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: CustomText(
-                    'Cancel',
-                    color: customColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: customColors.primary,
-                  ),
-                  onPressed: () async {
-                    final clearCache = di<ClearCache>();
-                    await clearCache();
-
-                    if (context.mounted) {
-                      final favoritesCubit = context.read<FavoritesCubit>();
-                      final tripsCubit = context.read<TripsPlanningCubit>();
-                      final profileStatsCubit = context
-                          .read<ProfileStatsCubit>();
-                      final settingsCubit = context.read<SettingsCubit>();
-
-                      favoritesCubit.fetchFavoriteCountries();
-                      tripsCubit.getAllTrips();
-                      profileStatsCubit.load();
-                      settingsCubit.refresh();
-
-                      showSuccessSnackBar(context, 'All data cleared');
-                      context.router.replaceAll([const OnboardingRoute()]);
-                    }
-                  },
-                  child: CustomText(
-                    'Clear Data',
-                    fontWeight: FontWeight.bold,
-                    color: customColors.onPrimary,
-                  ),
-                ),
-              ],
             );
           },
         );
@@ -682,43 +700,59 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                         ],
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: CustomText(
+                                'Cancel',
+                                color: customColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: customColors.primary,
+                              ),
+                              onPressed: () async {
+                                if (!formKey.currentState!.validate()) return;
+                                final name = nameController.text.trim();
+                                final currency = (selectedCurrency ?? '')
+                                    .toUpperCase();
+                                final interests = selectedInterests.toList();
+                                await settingsCubit.setUsername(name);
+                                await settingsCubit.setPreferredCurrency(
+                                  currency,
+                                );
+                                await settingsCubit.setTravelInterests(
+                                  interests,
+                                );
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                  showSuccessSnackBar(
+                                    context,
+                                    'Preferences updated',
+                                  );
+                                }
+                              },
+                              child: CustomText(
+                                'Save',
+                                fontWeight: FontWeight.bold,
+                                color: customColors.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: CustomText(
-                    'Cancel',
-                    color: customColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: customColors.primary,
-                  ),
-                  onPressed: () async {
-                    if (!formKey.currentState!.validate()) return;
-                    final name = nameController.text.trim();
-                    final currency = (selectedCurrency ?? '').toUpperCase();
-                    final interests = selectedInterests.toList();
-                    await settingsCubit.setUsername(name);
-                    await settingsCubit.setPreferredCurrency(currency);
-                    await settingsCubit.setTravelInterests(interests);
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                      showSuccessSnackBar(context, 'Preferences updated');
-                    }
-                  },
-                  child: CustomText(
-                    'Save',
-                    fontWeight: FontWeight.bold,
-                    color: customColors.onPrimary,
-                  ),
-                ),
-              ],
             );
           },
         );

@@ -353,7 +353,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     CustomText(
-                                      '${(_getBudgetUsage(expenses, trip) * 100).toInt()}% used',
+                                      '${(_getBudgetUsage(expenses, trip) * 100).toInt().clamp(0, 100)}% used',
                                       fontSize: 12,
                                       color: customColors.onMuted,
                                     ),
@@ -370,7 +370,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     Expanded(
                                       child: BudgetTiles(
                                         title: 'Budget',
-                                        amount: trip.budget.toString(),
+                                        amount: trip.budget,
                                         currency: trip.budgetCurrency,
                                         color: customColors.secondary,
                                       ),
@@ -379,9 +379,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     Expanded(
                                       child: BudgetTiles(
                                         title: 'Spent',
-                                        amount: _getBudgetSpent(
-                                          expenses,
-                                        ).toString(),
+                                        amount: _getBudgetSpent(expenses),
                                         currency: trip.budgetCurrency,
                                         color: customColors.secondary,
                                       ),
@@ -390,17 +388,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     Expanded(
                                       child: BudgetTiles(
                                         title: 'Left',
-                                        amount: _getBudgetLeft(
-                                          expenses,
-                                          trip,
-                                        ).toString(),
+                                        amount: _getBudgetLeft(expenses, trip),
                                         currency: trip.budgetCurrency,
                                         color:
                                             _getBudgetUsage(expenses, trip) >= 1
                                             ? customColors.destructive
-                                                  .withValues(alpha: 0.3)
+                                                  .withValues(alpha: 0.2)
                                             : customColors.success.withValues(
-                                                alpha: 0.3,
+                                                alpha: 0.2,
                                               ),
                                       ),
                                     ),
@@ -848,57 +843,75 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             }
                           },
                         ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: CustomText(
+                                  'Cancel',
+                                  color: customColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: customColors.primary,
+                                ),
+                                onPressed: () async {
+                                  if (!formKey.currentState!.validate()) return;
+                                  final amount = double.parse(
+                                    amountController.text,
+                                  );
+
+                                  try {
+                                    cubitContext
+                                        .read<TripExpensesCubit>()
+                                        .addNewExpense(
+                                          Expense(
+                                            id: 0,
+                                            tripId: trip.tripId,
+                                            amount: amount,
+                                            category: selectedCategory,
+                                            title: descriptionController.text,
+                                            date: expenseDate ?? DateTime.now(),
+                                          ),
+                                        );
+
+                                    if (mounted) {
+                                      Navigator.of(context).pop();
+                                      showSuccessSnackBar(
+                                        context,
+                                        'Expense added',
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      showErrorSnackBar(
+                                        context,
+                                        'Failed to add expense',
+                                      );
+                                    }
+                                  }
+                                },
+                                child: CustomText(
+                                  'Add',
+                                  fontWeight: FontWeight.bold,
+                                  color: customColors.onPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: CustomText(
-                    'Cancel',
-                    color: customColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: customColors.primary,
-                  ),
-                  onPressed: () async {
-                    if (!formKey.currentState!.validate()) return;
-                    final amount = double.parse(amountController.text);
-
-                    try {
-                      cubitContext.read<TripExpensesCubit>().addNewExpense(
-                        Expense(
-                          id: 0,
-                          tripId: trip.tripId,
-                          amount: amount,
-                          category: selectedCategory,
-                          title: descriptionController.text,
-                          date: expenseDate ?? DateTime.now(),
-                        ),
-                      );
-
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                        showSuccessSnackBar(context, 'Expense added');
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        showErrorSnackBar(context, 'Failed to add expense');
-                      }
-                    }
-                  },
-                  child: CustomText(
-                    'Add',
-                    fontWeight: FontWeight.bold,
-                    color: customColors.onPrimary,
-                  ),
-                ),
-              ],
             );
           },
         );
@@ -1133,70 +1146,88 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           },
                         ),
                         const SizedBox(height: 20.0),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: CustomText(
+                                  'Cancel',
+                                  color: customColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: customColors.primary,
+                                ),
+                                onPressed: () async {
+                                  if (!formKey.currentState!.validate()) return;
+                                  if (hasError) {
+                                    setLocalState(() {
+                                      showDateError = true;
+                                    });
+                                    return;
+                                  }
+
+                                  try {
+                                    final updatedTrip = Trip(
+                                      tripId: trip.tripId,
+                                      title: tripNameController.text,
+                                      startDate: startDate!,
+                                      endDate: endDate!,
+                                      countryName: trip.countryName,
+                                      countryLatitude: trip.countryLatitude,
+                                      countryLongitude: trip.countryLongitude,
+                                      budget: double.parse(
+                                        budgetController.text,
+                                      ),
+                                      budgetCurrency: trip.budgetCurrency,
+                                      destinationCurrency:
+                                          trip.destinationCurrency,
+                                      notes: noteController.text,
+                                      isManuallyCompleted:
+                                          trip.isManuallyCompleted,
+                                    );
+
+                                    cubitContext
+                                        .read<TripsPlanningCubit>()
+                                        .updateTrip(updatedTrip);
+
+                                    if (mounted) Navigator.of(context).pop();
+                                    if (mounted) {
+                                      showSuccessSnackBar(
+                                        context,
+                                        'Trip updated',
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      showErrorSnackBar(
+                                        context,
+                                        'Failed to update trip',
+                                      );
+                                    }
+                                  }
+                                },
+                                child: CustomText(
+                                  'Edit',
+                                  fontWeight: FontWeight.bold,
+                                  color: customColors.onPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: CustomText(
-                    'Cancel',
-                    color: customColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: customColors.primary,
-                  ),
-                  onPressed: () async {
-                    if (!formKey.currentState!.validate()) return;
-                    if (hasError) {
-                      setLocalState(() {
-                        showDateError = true;
-                      });
-                      return;
-                    }
-
-                    try {
-                      final updatedTrip = Trip(
-                        tripId: trip.tripId,
-                        title: tripNameController.text,
-                        startDate: startDate!,
-                        endDate: endDate!,
-                        countryName: trip.countryName,
-                        countryLatitude: trip.countryLatitude,
-                        countryLongitude: trip.countryLongitude,
-                        budget: double.parse(budgetController.text),
-                        budgetCurrency: trip.budgetCurrency,
-                        destinationCurrency: trip.destinationCurrency,
-                        notes: noteController.text,
-                        isManuallyCompleted: trip.isManuallyCompleted,
-                      );
-
-                      cubitContext.read<TripsPlanningCubit>().updateTrip(
-                        updatedTrip,
-                      );
-
-                      if (mounted) Navigator.of(context).pop();
-                      if (mounted) {
-                        showSuccessSnackBar(context, 'Trip updated');
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        showErrorSnackBar(context, 'Failed to update trip');
-                      }
-                    }
-                  },
-                  child: CustomText(
-                    'Edit',
-                    fontWeight: FontWeight.bold,
-                    color: customColors.onPrimary,
-                  ),
-                ),
-              ],
             );
           },
         );

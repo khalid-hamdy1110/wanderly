@@ -425,6 +425,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   context.read<SetPrefsCubit>().setUsernamePref(
                     _nameController.text,
                   );
+                  context.read<SetPrefsCubit>().setPreferredCurrency('USD');
+                  context.read<SetPrefsCubit>().setOnboardingCompleted(false);
                   di<SettingsCubit>().refresh();
                   context.router.replace(const NavigationBarShellRoute());
                 },

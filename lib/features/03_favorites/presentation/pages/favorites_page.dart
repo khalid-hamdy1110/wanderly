@@ -1,7 +1,9 @@
+import 'package:amicons/amicons.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:wanderly/core/route_config/app_router.gr.dart';
 import 'package:wanderly/core/theming/theme_extensions.dart';
 import 'package:wanderly/core/ui/country_card.dart';
@@ -82,8 +84,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        buildPill('alpha', 'Alphabetical'),
                         buildPill('recent', 'Recently added'),
+                        buildPill('alpha', 'Alphabetical'),
                         buildPill('region', 'Region'),
                       ],
                     ),
@@ -125,29 +127,51 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   itemBuilder: (context, index) {
                                     final country = countries[index];
 
-                                    return Dismissible(
-                                      key: Key(country.code),
-                                      direction: DismissDirection.endToStart,
-                                      onDismissed: (direction) {
-                                        context
-                                            .read<FavoritesCubit>()
-                                            .toggleFavoriteStatus(country);
-                                      },
-                                      child: CountryCard(
-                                        source: 'favorites',
-                                        backgroundColor: customColors.card,
-                                        borderColor: customColors.border,
-                                        countryName: country.name,
-                                        flagUrl: country.flagUrl,
-                                        region: country.region,
-                                        briefInfo: country.briefInfo,
-                                        onFavorite: () {},
-                                        isFavorite: true,
-                                        includeFavoriteIcon: false,
-                                        onTap: () => context.router.push(
-                                          DestinationDetailsRoute(
-                                            source: 'favorites',
-                                            country: country,
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: Slidable(
+                                        key: Key(country.code),
+                                        endActionPane: ActionPane(
+                                          motion: const ScrollMotion(),
+                                          extentRatio: 0.25,
+                                          dismissible: DismissiblePane(
+                                            onDismissed: () => context
+                                                .read<FavoritesCubit>()
+                                                .toggleFavoriteStatus(country),
+                                          ),
+                                          children: [
+                                            SlidableAction(
+                                              onPressed: (_) {},
+                                              autoClose: true,
+                                              backgroundColor:
+                                                  customColors.background,
+                                              foregroundColor:
+                                                  customColors.destructive,
+                                              icon: Amicons.iconly_delete_fill,
+                                              label: 'Remove',
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                          ],
+                                        ),
+                                        child: CountryCard(
+                                          source: 'favorites',
+                                          backgroundColor: customColors.card,
+                                          borderColor: customColors.border,
+                                          countryName: country.name,
+                                          flagUrl: country.flagUrl,
+                                          region: country.region,
+                                          briefInfo: country.briefInfo,
+                                          onFavorite: () {},
+                                          isFavorite: true,
+                                          includeFavoriteIcon: false,
+                                          onTap: () => context.router.push(
+                                            DestinationDetailsRoute(
+                                              source: 'favorites',
+                                              country: country,
+                                            ),
                                           ),
                                         ),
                                       ),
