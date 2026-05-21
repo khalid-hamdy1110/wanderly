@@ -25,14 +25,14 @@ class ContinueButton extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: isDisabled ? customColors.disabledPrimary : customColors.primary,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: customColors.border),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: isDisabled ? null : onTap,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

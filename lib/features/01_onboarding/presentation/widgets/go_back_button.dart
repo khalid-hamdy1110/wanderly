@@ -25,14 +25,14 @@ class GoBackButton extends StatelessWidget {
         color: isDisabled
             ? customColors.disabledSecondary
             : customColors.secondary,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: customColors.border),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: isDisabled ? null : onTap,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(16),
           child: Center(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),

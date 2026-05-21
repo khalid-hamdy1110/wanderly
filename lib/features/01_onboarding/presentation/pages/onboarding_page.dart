@@ -67,68 +67,91 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ],
       child: Scaffold(
         backgroundColor: customColors.background,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                BlocBuilder<OnboardingCubit, OnboardingState>(
-                  builder: (context, state) {
-                    return TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0, end: state.progress),
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.easeOut,
-                      builder: (context, value, child) {
-                        return LinearProgressIndicator(
-                          value: value,
-                          backgroundColor: customColors.secondary,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            customColors.primary,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
+        body: Stack(
+          children: [
+            Image.asset(
+              'assets/onboarding_background.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BlocBuilder<OnboardingCubit, OnboardingState>(
+                      builder: (context, state) {
+                        return TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: state.progress),
+                          duration: const Duration(milliseconds: 800),
+                          curve: Curves.easeOut,
+                          builder: (context, value, child) {
+                            return LinearProgressIndicator(
+                              value: value,
+                              backgroundColor: customColors.secondary,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                customColors.primary,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverFillRemaining(
-                          child: BlocListener<OnboardingCubit, OnboardingState>(
-                            listener: (context, state) {
-                              _pageController.animateToPage(
-                                state.currentPage,
-                                duration: const Duration(milliseconds: 400),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            child: Builder(
-                              builder: (context) {
-                                return PageView(
-                                  controller: _pageController,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    _firstPageBuilder(context),
-                                    _secondPageBuilder(context),
-                                    _thirdPageBuilder(context),
-                                    _fourthPageBuilder(context),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: CustomScrollView(
+                          slivers: [
+                            SliverFillRemaining(
+                              child:
+                                  BlocListener<
+                                    OnboardingCubit,
+                                    OnboardingState
+                                  >(
+                                    listener: (context, state) {
+                                      _pageController.animateToPage(
+                                        state.currentPage,
+                                        duration: const Duration(
+                                          milliseconds: 400,
+                                        ),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    },
+                                    child: Builder(
+                                      builder: (context) {
+                                        return PageView(
+                                          controller: _pageController,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          children: [
+                                            _firstPageBuilder(context),
+                                            _secondPageBuilder(context),
+                                            _thirdPageBuilder(context),
+                                            _fourthPageBuilder(context),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    CustomText(
+                      'Wanderly v1.0.0',
+                      fontSize: 12,
+                      color: customColors.onMuted,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

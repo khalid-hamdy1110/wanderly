@@ -107,7 +107,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         child: CustomText(
           'No Trips!',
           fontSize: 32,
-          color: customColors.onBackground,
+          color: customColors.onMuted,
         ),
       );
     }
